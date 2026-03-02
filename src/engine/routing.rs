@@ -27,7 +27,9 @@ impl RoutePlanner {
     pub fn new(registry: PairRegistry, pricing: PricingEngine) -> Self {
         Self { registry, pricing }
     }
-
+    let graph = routing.build_token_graph(&uni);
+    let routes = routing.build_routes_from_graph(&graph);
+    let tri_routes = routing.build_triangular_routes(&graph);
     /// Build all 1‑hop and 2‑hop routes for a given chain.
     pub fn build_routes(&self, chain: &str, max_hops: usize) -> Vec<Route> {
         let pools = self.registry.by_chain(chain);
