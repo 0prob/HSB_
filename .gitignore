@@ -1,0 +1,70 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Rust
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# Database files
+*.redb
+*.redb-*
+*.db
+*.sqlite
+*.sqlite3
+
+# Cursor files
+cursor.txt
+cursor.*.txt
+
+# Build artifacts
+out/
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+
+# Substreams package
+*.spkg
+
+# Price cache
+prices.json
+
+# Deployment artifacts
+deployments/
+
+# Node modules (if using any JS tooling)
+node_modules/
+
+# Foundry
+out/
+cache/
+broadcast/
+
+# Coverage
+coverage/
+lcov.info
+
+# Secrets
+secrets/
+keys/
+*.pem

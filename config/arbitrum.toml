@@ -1,0 +1,55 @@
+enabled = false
+name = "arbitrum"
+chain_id = 42161
+
+rpc_url = "https://arb1.arbitrum.io/rpc"
+hypersync_url = "wss://arbitrum.hypersync.example"
+hyperindex_url = "https://arbitrum.hyperindex.example/graphql"
+
+[gas]
+max_gwei = 5.0
+priority_gwei = 0.5
+block_time_seconds = 0.25
+
+[execution]
+executor_address = "0x0000000000000000000000000000000000000000"
+slippage_bps = 50
+min_profit_usd = 5.0
+max_route_hops = 4
+
+[dex.uniswap_v2]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+init_code_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+[dex.uniswap_v3]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+quoter = "0x0000000000000000000000000000000000000000"
+
+[dex.curve]
+enabled = true
+registry = "0x0000000000000000000000000000000000000000"
+
+[dex.balancer]
+enabled = true
+vault = "0x0000000000000000000000000000000000000000"
+
+[dex.algebra]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.quickswap]
+enabled = false
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.sushiswap]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[tokens]
+usdc = "0x0000000000000000000000000000000000000000"
+usdt = "0x0000000000000000000000000000000000000000"
+dai  = "0x0000000000000000000000000000000000000000"
+weth = "0x0000000000000000000000000000000000000000"
+wbtc = "0x0000000000000000000000000000000000000000"

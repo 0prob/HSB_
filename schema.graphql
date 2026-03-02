@@ -1,0 +1,14 @@
+schema {
+  query: Query
+}
+
+type Query {
+  pairCreateds: [PairCreated!]!
+}
+
+type PairCreated {
+  pair: String!
+  token0: String!
+  token1: String!
+  dex: String!
+}

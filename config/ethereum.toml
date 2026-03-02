@@ -1,0 +1,55 @@
+enabled = false
+name = "ethereum"
+chain_id = 1
+
+rpc_url = "https://mainnet.infura.io/v3/YOUR_KEY"
+hypersync_url = "wss://ethereum.hypersync.example"
+hyperindex_url = "https://ethereum.hyperindex.example/graphql"
+
+[gas]
+max_gwei = 80.0
+priority_gwei = 2.0
+block_time_seconds = 12.0
+
+[execution]
+executor_address = "0x0000000000000000000000000000000000000000"
+slippage_bps = 50
+min_profit_usd = 10.0
+max_route_hops = 4
+
+[dex.uniswap_v2]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+init_code_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+[dex.uniswap_v3]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+quoter = "0x0000000000000000000000000000000000000000"
+
+[dex.curve]
+enabled = true
+registry = "0x0000000000000000000000000000000000000000"
+
+[dex.balancer]
+enabled = true
+vault = "0x0000000000000000000000000000000000000000"
+
+[dex.algebra]
+enabled = false
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.quickswap]
+enabled = false
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.sushiswap]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[tokens]
+usdc = "0x0000000000000000000000000000000000000000"
+usdt = "0x0000000000000000000000000000000000000000"
+dai  = "0x0000000000000000000000000000000000000000"
+weth = "0x0000000000000000000000000000000000000000"
+wbtc = "0x0000000000000000000000000000000000000000"

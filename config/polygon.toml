@@ -1,0 +1,60 @@
+enabled = true
+name = "polygon"
+chain_id = 137
+
+rpc_url = "https://polygon-rpc.com"
+hypersync_url = "wss://polygon.hypersync.example"   # replace with real HyperSync endpoint
+hyperindex_url = "https://polygon.hyperindex.example/graphql"  # replace with real HyperIndex endpoint
+
+[gas]
+# rough defaults; tune after measuring
+max_gwei = 80.0
+priority_gwei = 5.0
+block_time_seconds = 2.1
+
+[execution]
+# address of deployed ArbExecutor on Polygon
+executor_address = "0x0000000000000000000000000000000000000000"
+slippage_bps = 50          # 0.50%
+min_profit_usd = 5.0
+max_route_hops = 4
+
+[dex.uniswap_v2]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+init_code_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+[dex.uniswap_v3]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+quoter = "0x0000000000000000000000000000000000000000"
+
+[dex.quickswap]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.sushiswap]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[dex.curve]
+enabled = true
+registry = "0x0000000000000000000000000000000000000000"
+
+[dex.balancer]
+enabled = true
+vault = "0x0000000000000000000000000000000000000000"
+
+[dex.algebra]
+enabled = true
+factory = "0x0000000000000000000000000000000000000000"
+
+[tokens]
+# canonical stablecoins and routing hubs on Polygon
+# fill with real addresses as you wire this up
+usdc = "0x0000000000000000000000000000000000000000"
+usdt = "0x0000000000000000000000000000000000000000"
+dai  = "0x0000000000000000000000000000000000000000"
+weth = "0x0000000000000000000000000000000000000000"
+wbtc = "0x0000000000000000000000000000000000000000"
+wmatic = "0x0000000000000000000000000000000000000000"
