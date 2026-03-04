@@ -16,8 +16,6 @@ use crate::universe::filter::UniverseFilter;
 use super::decode::decode_log;
 use super::filters::build_filter;
 
-/// Stream logs for all pools currently in the registry.
-/// Registry is primarily populated by HyperIndex; Polygon can optionally fallback to factory discovery (handled elsewhere).
 pub async fn run_hypersync_subscriber(
     chain: ChainConfig,
     registry: PairRegistry,
@@ -49,7 +47,7 @@ pub async fn run_hypersync_subscriber(
         .unwrap_or(50_000);
 
     loop {
-        let pools = registry.by_chain(&chain.name);
+        let pools = registry.by_chain_id(chain.chain_id);
         if pools.is_empty() {
             tracing::warn!("No pools in registry yet for {}; waiting...", chain.name);
             sleep(Duration::from_secs(2)).await;
@@ -90,9 +88,10 @@ pub async fn run_hypersync_subscriber(
                 for lg in batch {
                     let reg = registry.clone();
                     let pr = pricing.clone();
+                    let chain_id = chain.chain_id;
                     let chain_name = chain.name.clone();
                     tokio::spawn(async move {
-                        if let Err(e) = decode_log(chain_name, lg, reg, pr).await {
+                        if let Err(e) = decode_log(chain_id, chain_name, lg, reg, pr).await {
                             tracing::error!("Decode error: {:?}", e);
                         }
                     });

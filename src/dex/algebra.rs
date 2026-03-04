@@ -6,7 +6,6 @@ use crate::engine::pricing::PricingEngine;
 use crate::types::{PairMeta, SwapEvent, SwapType};
 
 fn u256_from_i256_abs(x: I256) -> U256 {
-    // Convert |x| to U256 using big-endian bytes
     let ux: U256 = if x >= I256::zero() {
         x.into_raw()
     } else {
@@ -18,13 +17,13 @@ fn u256_from_i256_abs(x: I256) -> U256 {
     U256::from_big_endian(&buf)
 }
 
-/// Algebra Swap (UniV3-style):
-/// event Swap(address indexed sender, address indexed recipient,
-///            int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)
-///
-/// Indexed fields (sender, recipient) are in topics; data holds:
-/// (amount0, amount1, sqrtPriceX96, liquidity, tick)
-pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+pub fn decode_swap(
+    chain_id: u64,
+    chain: String,
+    meta: &PairMeta,
+    log: &Log,
+    raw: RawLog,
+) -> Result<SwapEvent> {
     let (amount0, amount1, _sqrt_price_x96, liquidity, tick): (I256, I256, U256, U256, i32) =
         AbiDecode::decode(raw.data)?;
 
@@ -41,6 +40,7 @@ pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Re
     };
 
     Ok(SwapEvent {
+        chain_id,
         chain,
         pool: meta.pool,
         block_number: log.block_number.unwrap().as_u64(),

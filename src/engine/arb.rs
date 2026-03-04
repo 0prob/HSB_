@@ -7,7 +7,7 @@ use crate::engine::decimals::DecimalsCache;
 use crate::engine::gas::GasModel;
 use crate::engine::pricing::PricingEngine;
 use crate::engine::registry::PairRegistry;
-use crate::engine::routing::{RoutePlanner, Route, TriRoute};
+use crate::engine::routing::{Route, RoutePlanner, TriRoute};
 use crate::engine::simulator::{ProfitSimulator, SimulationResult};
 use crate::engine::snapshot::RpcSnapshot;
 use crate::types::ChainConfig;
@@ -33,7 +33,7 @@ impl ArbEngine {
         gas_model: GasModel,
     ) -> Self {
         let routing = RoutePlanner::new(registry.clone(), pricing.clone());
-        let simulator = ProfitSimulator::new(gas_model, registry, pricing, decimals.clone());
+        let simulator = ProfitSimulator::new(chain.chain_id, gas_model, registry, pricing, decimals.clone());
         let universe = UniverseFilter::from_chain(&chain).expect("UniverseFilter init failed");
         Self { chain, routing, simulator, decimals, snapshot, universe }
     }
@@ -66,7 +66,7 @@ impl ArbEngine {
 
         self.decimals.preload(stables).await;
 
-        let mut routes = self.routing.build_2hop_cycles(&self.chain.name);
+        let mut routes = self.routing.build_2hop_cycles(self.chain.chain_id);
         routes.retain(|r| self.universe.accept_route_tokens(&r.tokens));
         routes.retain(|r| r.tokens.len() == 3 && r.tokens[0] == r.tokens[2] && stables.contains(&r.tokens[0]));
         routes.sort_by(|a,b| b.price.partial_cmp(&a.price).unwrap_or(std::cmp::Ordering::Equal));
@@ -136,7 +136,7 @@ impl ArbEngine {
 
         self.decimals.preload(stables).await;
 
-        let mut tris = self.routing.build_triangular_cycles(&self.chain.name);
+        let mut tris = self.routing.build_triangular_cycles(self.chain.chain_id);
         tris.retain(|t| self.universe.accept_route_tokens(&t.tokens));
         tris.retain(|t| t.tokens[0] == t.tokens[3] && stables.contains(&t.tokens[0]));
         tris.sort_by(|a,b| b.composite_price.partial_cmp(&a.composite_price).unwrap_or(std::cmp::Ordering::Equal));
@@ -176,9 +176,7 @@ impl ArbEngine {
                     U256::from(p3_r0), U256::from(p3_r1),
                     slippage_bps,
                     min_profit_usd,
-                ).await {
-                    Ok(s)=>s, Err(_)=>return
-                };
+                ).await { Ok(s)=>s, Err(_)=>return };
 
                 if !sim.profitable { return; }
 
@@ -191,14 +189,13 @@ impl ArbEngine {
         }
 
         for h in handles { let _ = h.await; }
+
         let guard = best.lock().await;
         Ok(guard.clone())
     }
 
     pub async fn act(&self) -> Result<()> {
-        if !self.chain.enabled {
-            return Ok(());
-        }
+        if !self.chain.enabled { return Ok(()); }
 
         let snap_block = self.snapshot.latest_block_number().await?;
 

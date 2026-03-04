@@ -1,14 +1,3907 @@
 schema {
-  query: Query
+  query: query_root
+  subscription: subscription_root
 }
 
-type Query {
-  pairCreateds: [PairCreated!]!
+"""whether this query should be cached (Hasura Cloud only)"""
+directive @cached(
+  """measured in seconds"""
+  ttl: Int! = 60
+
+  """refresh the cache entry"""
+  refresh: Boolean! = false
+) on QUERY
+
+"""
+columns and relationships of "_meta"
+"""
+type _meta {
+  bufferBlock: Int
+  chainId: Int
+  endBlock: Int
+  eventsProcessed: Int
+  firstEventBlock: Int
+  isReady: Boolean
+  progressBlock: Int
+  readyAt: timestamptz
+  sourceBlock: Int
+  startBlock: Int
 }
 
-type PairCreated {
-  pair: String!
-  token0: String!
-  token1: String!
-  dex: String!
+"""
+Boolean expression to filter rows from the table "_meta". All fields are combined with a logical 'AND'.
+"""
+input _meta_bool_exp {
+  _and: [_meta_bool_exp!]
+  _not: _meta_bool_exp
+  _or: [_meta_bool_exp!]
+  bufferBlock: Int_comparison_exp
+  chainId: Int_comparison_exp
+  endBlock: Int_comparison_exp
+  eventsProcessed: Int_comparison_exp
+  firstEventBlock: Int_comparison_exp
+  isReady: Boolean_comparison_exp
+  progressBlock: Int_comparison_exp
+  readyAt: timestamptz_comparison_exp
+  sourceBlock: Int_comparison_exp
+  startBlock: Int_comparison_exp
 }
+
+"""Ordering options when selecting data from "_meta"."""
+input _meta_order_by {
+  bufferBlock: order_by
+  chainId: order_by
+  endBlock: order_by
+  eventsProcessed: order_by
+  firstEventBlock: order_by
+  isReady: order_by
+  progressBlock: order_by
+  readyAt: order_by
+  sourceBlock: order_by
+  startBlock: order_by
+}
+
+"""
+select columns of table "_meta"
+"""
+enum _meta_select_column {
+  """column name"""
+  bufferBlock
+
+  """column name"""
+  chainId
+
+  """column name"""
+  endBlock
+
+  """column name"""
+  eventsProcessed
+
+  """column name"""
+  firstEventBlock
+
+  """column name"""
+  isReady
+
+  """column name"""
+  progressBlock
+
+  """column name"""
+  readyAt
+
+  """column name"""
+  sourceBlock
+
+  """column name"""
+  startBlock
+}
+
+"""
+Streaming cursor of the table "_meta"
+"""
+input _meta_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: _meta_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input _meta_stream_cursor_value_input {
+  bufferBlock: Int
+  chainId: Int
+  endBlock: Int
+  eventsProcessed: Int
+  firstEventBlock: Int
+  isReady: Boolean
+  progressBlock: Int
+  readyAt: timestamptz
+  sourceBlock: Int
+  startBlock: Int
+}
+
+"""
+columns and relationships of "Action"
+"""
+type Action {
+  block: numeric!
+
+  """An object relationship"""
+  campaign: Campaign
+  campaign_id: String!
+  category: actioncategory!
+  chainId: numeric!
+  claimAmount: numeric
+  claimIndex: numeric
+  claimRecipient: String
+  claimStreamId: String
+  claimTo: String
+  claimTokenId: numeric
+  clawbackAmount: numeric
+  clawbackFrom: String
+  clawbackTo: String
+  fee: numeric
+  from: String!
+  hash: String!
+  id: String!
+  subgraphId: numeric!
+  timestamp: numeric!
+}
+
+"""
+aggregated selection of "Action"
+"""
+type Action_aggregate {
+  aggregate: Action_aggregate_fields
+  nodes: [Action!]!
+}
+
+input Action_aggregate_bool_exp {
+  count: Action_aggregate_bool_exp_count
+}
+
+input Action_aggregate_bool_exp_count {
+  arguments: [Action_select_column!]
+  distinct: Boolean
+  filter: Action_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "Action"
+"""
+type Action_aggregate_fields {
+  avg: Action_avg_fields
+  count(columns: [Action_select_column!], distinct: Boolean): Int!
+  max: Action_max_fields
+  min: Action_min_fields
+  stddev: Action_stddev_fields
+  stddev_pop: Action_stddev_pop_fields
+  stddev_samp: Action_stddev_samp_fields
+  sum: Action_sum_fields
+  var_pop: Action_var_pop_fields
+  var_samp: Action_var_samp_fields
+  variance: Action_variance_fields
+}
+
+"""
+order by aggregate values of table "Action"
+"""
+input Action_aggregate_order_by {
+  avg: Action_avg_order_by
+  count: order_by
+  max: Action_max_order_by
+  min: Action_min_order_by
+  stddev: Action_stddev_order_by
+  stddev_pop: Action_stddev_pop_order_by
+  stddev_samp: Action_stddev_samp_order_by
+  sum: Action_sum_order_by
+  var_pop: Action_var_pop_order_by
+  var_samp: Action_var_samp_order_by
+  variance: Action_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type Action_avg_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by avg() on columns of table "Action"
+"""
+input Action_avg_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "Action". All fields are combined with a logical 'AND'.
+"""
+input Action_bool_exp {
+  _and: [Action_bool_exp!]
+  _not: Action_bool_exp
+  _or: [Action_bool_exp!]
+  block: numeric_comparison_exp
+  campaign: Campaign_bool_exp
+  campaign_id: String_comparison_exp
+  category: actioncategory_comparison_exp
+  chainId: numeric_comparison_exp
+  claimAmount: numeric_comparison_exp
+  claimIndex: numeric_comparison_exp
+  claimRecipient: String_comparison_exp
+  claimStreamId: String_comparison_exp
+  claimTo: String_comparison_exp
+  claimTokenId: numeric_comparison_exp
+  clawbackAmount: numeric_comparison_exp
+  clawbackFrom: String_comparison_exp
+  clawbackTo: String_comparison_exp
+  fee: numeric_comparison_exp
+  from: String_comparison_exp
+  hash: String_comparison_exp
+  id: String_comparison_exp
+  subgraphId: numeric_comparison_exp
+  timestamp: numeric_comparison_exp
+}
+
+"""aggregate max on columns"""
+type Action_max_fields {
+  block: numeric
+  campaign_id: String
+  category: actioncategory
+  chainId: numeric
+  claimAmount: numeric
+  claimIndex: numeric
+  claimRecipient: String
+  claimStreamId: String
+  claimTo: String
+  claimTokenId: numeric
+  clawbackAmount: numeric
+  clawbackFrom: String
+  clawbackTo: String
+  fee: numeric
+  from: String
+  hash: String
+  id: String
+  subgraphId: numeric
+  timestamp: numeric
+}
+
+"""
+order by max() on columns of table "Action"
+"""
+input Action_max_order_by {
+  block: order_by
+  campaign_id: order_by
+  category: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimRecipient: order_by
+  claimStreamId: order_by
+  claimTo: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  clawbackFrom: order_by
+  clawbackTo: order_by
+  fee: order_by
+  from: order_by
+  hash: order_by
+  id: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate min on columns"""
+type Action_min_fields {
+  block: numeric
+  campaign_id: String
+  category: actioncategory
+  chainId: numeric
+  claimAmount: numeric
+  claimIndex: numeric
+  claimRecipient: String
+  claimStreamId: String
+  claimTo: String
+  claimTokenId: numeric
+  clawbackAmount: numeric
+  clawbackFrom: String
+  clawbackTo: String
+  fee: numeric
+  from: String
+  hash: String
+  id: String
+  subgraphId: numeric
+  timestamp: numeric
+}
+
+"""
+order by min() on columns of table "Action"
+"""
+input Action_min_order_by {
+  block: order_by
+  campaign_id: order_by
+  category: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimRecipient: order_by
+  claimStreamId: order_by
+  claimTo: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  clawbackFrom: order_by
+  clawbackTo: order_by
+  fee: order_by
+  from: order_by
+  hash: order_by
+  id: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""Ordering options when selecting data from "Action"."""
+input Action_order_by {
+  block: order_by
+  campaign: Campaign_order_by
+  campaign_id: order_by
+  category: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimRecipient: order_by
+  claimStreamId: order_by
+  claimTo: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  clawbackFrom: order_by
+  clawbackTo: order_by
+  fee: order_by
+  from: order_by
+  hash: order_by
+  id: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""
+select columns of table "Action"
+"""
+enum Action_select_column {
+  """column name"""
+  block
+
+  """column name"""
+  campaign_id
+
+  """column name"""
+  category
+
+  """column name"""
+  chainId
+
+  """column name"""
+  claimAmount
+
+  """column name"""
+  claimIndex
+
+  """column name"""
+  claimRecipient
+
+  """column name"""
+  claimStreamId
+
+  """column name"""
+  claimTo
+
+  """column name"""
+  claimTokenId
+
+  """column name"""
+  clawbackAmount
+
+  """column name"""
+  clawbackFrom
+
+  """column name"""
+  clawbackTo
+
+  """column name"""
+  fee
+
+  """column name"""
+  from
+
+  """column name"""
+  hash
+
+  """column name"""
+  id
+
+  """column name"""
+  subgraphId
+
+  """column name"""
+  timestamp
+}
+
+"""aggregate stddev on columns"""
+type Action_stddev_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by stddev() on columns of table "Action"
+"""
+input Action_stddev_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type Action_stddev_pop_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by stddev_pop() on columns of table "Action"
+"""
+input Action_stddev_pop_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type Action_stddev_samp_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by stddev_samp() on columns of table "Action"
+"""
+input Action_stddev_samp_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""
+Streaming cursor of the table "Action"
+"""
+input Action_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Action_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Action_stream_cursor_value_input {
+  block: numeric
+  campaign_id: String
+  category: actioncategory
+  chainId: numeric
+  claimAmount: numeric
+  claimIndex: numeric
+  claimRecipient: String
+  claimStreamId: String
+  claimTo: String
+  claimTokenId: numeric
+  clawbackAmount: numeric
+  clawbackFrom: String
+  clawbackTo: String
+  fee: numeric
+  from: String
+  hash: String
+  id: String
+  subgraphId: numeric
+  timestamp: numeric
+}
+
+"""aggregate sum on columns"""
+type Action_sum_fields {
+  block: numeric
+  chainId: numeric
+  claimAmount: numeric
+  claimIndex: numeric
+  claimTokenId: numeric
+  clawbackAmount: numeric
+  fee: numeric
+  subgraphId: numeric
+  timestamp: numeric
+}
+
+"""
+order by sum() on columns of table "Action"
+"""
+input Action_sum_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate var_pop on columns"""
+type Action_var_pop_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by var_pop() on columns of table "Action"
+"""
+input Action_var_pop_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate var_samp on columns"""
+type Action_var_samp_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by var_samp() on columns of table "Action"
+"""
+input Action_var_samp_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+"""aggregate variance on columns"""
+type Action_variance_fields {
+  block: Float
+  chainId: Float
+  claimAmount: Float
+  claimIndex: Float
+  claimTokenId: Float
+  clawbackAmount: Float
+  fee: Float
+  subgraphId: Float
+  timestamp: Float
+}
+
+"""
+order by variance() on columns of table "Action"
+"""
+input Action_variance_order_by {
+  block: order_by
+  chainId: order_by
+  claimAmount: order_by
+  claimIndex: order_by
+  claimTokenId: order_by
+  clawbackAmount: order_by
+  fee: order_by
+  subgraphId: order_by
+  timestamp: order_by
+}
+
+scalar actioncategory
+
+"""
+Boolean expression to compare columns of type "actioncategory". All fields are combined with logical 'AND'.
+"""
+input actioncategory_comparison_exp {
+  _eq: actioncategory
+  _gt: actioncategory
+  _gte: actioncategory
+  _in: [actioncategory!]
+  _is_null: Boolean
+  _lt: actioncategory
+  _lte: actioncategory
+  _neq: actioncategory
+  _nin: [actioncategory!]
+}
+
+"""
+columns and relationships of "Activity"
+"""
+type Activity {
+  amount: numeric!
+
+  """An object relationship"""
+  campaign: Campaign
+  campaign_id: String!
+  claims: numeric!
+  day: numeric!
+  id: String!
+  timestamp: numeric!
+}
+
+"""
+aggregated selection of "Activity"
+"""
+type Activity_aggregate {
+  aggregate: Activity_aggregate_fields
+  nodes: [Activity!]!
+}
+
+input Activity_aggregate_bool_exp {
+  count: Activity_aggregate_bool_exp_count
+}
+
+input Activity_aggregate_bool_exp_count {
+  arguments: [Activity_select_column!]
+  distinct: Boolean
+  filter: Activity_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "Activity"
+"""
+type Activity_aggregate_fields {
+  avg: Activity_avg_fields
+  count(columns: [Activity_select_column!], distinct: Boolean): Int!
+  max: Activity_max_fields
+  min: Activity_min_fields
+  stddev: Activity_stddev_fields
+  stddev_pop: Activity_stddev_pop_fields
+  stddev_samp: Activity_stddev_samp_fields
+  sum: Activity_sum_fields
+  var_pop: Activity_var_pop_fields
+  var_samp: Activity_var_samp_fields
+  variance: Activity_variance_fields
+}
+
+"""
+order by aggregate values of table "Activity"
+"""
+input Activity_aggregate_order_by {
+  avg: Activity_avg_order_by
+  count: order_by
+  max: Activity_max_order_by
+  min: Activity_min_order_by
+  stddev: Activity_stddev_order_by
+  stddev_pop: Activity_stddev_pop_order_by
+  stddev_samp: Activity_stddev_samp_order_by
+  sum: Activity_sum_order_by
+  var_pop: Activity_var_pop_order_by
+  var_samp: Activity_var_samp_order_by
+  variance: Activity_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type Activity_avg_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by avg() on columns of table "Activity"
+"""
+input Activity_avg_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "Activity". All fields are combined with a logical 'AND'.
+"""
+input Activity_bool_exp {
+  _and: [Activity_bool_exp!]
+  _not: Activity_bool_exp
+  _or: [Activity_bool_exp!]
+  amount: numeric_comparison_exp
+  campaign: Campaign_bool_exp
+  campaign_id: String_comparison_exp
+  claims: numeric_comparison_exp
+  day: numeric_comparison_exp
+  id: String_comparison_exp
+  timestamp: numeric_comparison_exp
+}
+
+"""aggregate max on columns"""
+type Activity_max_fields {
+  amount: numeric
+  campaign_id: String
+  claims: numeric
+  day: numeric
+  id: String
+  timestamp: numeric
+}
+
+"""
+order by max() on columns of table "Activity"
+"""
+input Activity_max_order_by {
+  amount: order_by
+  campaign_id: order_by
+  claims: order_by
+  day: order_by
+  id: order_by
+  timestamp: order_by
+}
+
+"""aggregate min on columns"""
+type Activity_min_fields {
+  amount: numeric
+  campaign_id: String
+  claims: numeric
+  day: numeric
+  id: String
+  timestamp: numeric
+}
+
+"""
+order by min() on columns of table "Activity"
+"""
+input Activity_min_order_by {
+  amount: order_by
+  campaign_id: order_by
+  claims: order_by
+  day: order_by
+  id: order_by
+  timestamp: order_by
+}
+
+"""Ordering options when selecting data from "Activity"."""
+input Activity_order_by {
+  amount: order_by
+  campaign: Campaign_order_by
+  campaign_id: order_by
+  claims: order_by
+  day: order_by
+  id: order_by
+  timestamp: order_by
+}
+
+"""
+select columns of table "Activity"
+"""
+enum Activity_select_column {
+  """column name"""
+  amount
+
+  """column name"""
+  campaign_id
+
+  """column name"""
+  claims
+
+  """column name"""
+  day
+
+  """column name"""
+  id
+
+  """column name"""
+  timestamp
+}
+
+"""aggregate stddev on columns"""
+type Activity_stddev_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by stddev() on columns of table "Activity"
+"""
+input Activity_stddev_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type Activity_stddev_pop_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by stddev_pop() on columns of table "Activity"
+"""
+input Activity_stddev_pop_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type Activity_stddev_samp_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by stddev_samp() on columns of table "Activity"
+"""
+input Activity_stddev_samp_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""
+Streaming cursor of the table "Activity"
+"""
+input Activity_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Activity_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Activity_stream_cursor_value_input {
+  amount: numeric
+  campaign_id: String
+  claims: numeric
+  day: numeric
+  id: String
+  timestamp: numeric
+}
+
+"""aggregate sum on columns"""
+type Activity_sum_fields {
+  amount: numeric
+  claims: numeric
+  day: numeric
+  timestamp: numeric
+}
+
+"""
+order by sum() on columns of table "Activity"
+"""
+input Activity_sum_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""aggregate var_pop on columns"""
+type Activity_var_pop_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by var_pop() on columns of table "Activity"
+"""
+input Activity_var_pop_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""aggregate var_samp on columns"""
+type Activity_var_samp_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by var_samp() on columns of table "Activity"
+"""
+input Activity_var_samp_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""aggregate variance on columns"""
+type Activity_variance_fields {
+  amount: Float
+  claims: Float
+  day: Float
+  timestamp: Float
+}
+
+"""
+order by variance() on columns of table "Activity"
+"""
+input Activity_variance_order_by {
+  amount: order_by
+  claims: order_by
+  day: order_by
+  timestamp: order_by
+}
+
+"""
+columns and relationships of "Asset"
+"""
+type Asset {
+  address: String!
+
+  """An array relationship"""
+  campaigns(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): [Campaign!]!
+
+  """An aggregate relationship"""
+  campaigns_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): Campaign_aggregate!
+  chainId: numeric!
+  decimals: numeric!
+  id: String!
+  name: String!
+  symbol: String!
+}
+
+"""
+aggregated selection of "Asset"
+"""
+type Asset_aggregate {
+  aggregate: Asset_aggregate_fields
+  nodes: [Asset!]!
+}
+
+"""
+aggregate fields of "Asset"
+"""
+type Asset_aggregate_fields {
+  avg: Asset_avg_fields
+  count(columns: [Asset_select_column!], distinct: Boolean): Int!
+  max: Asset_max_fields
+  min: Asset_min_fields
+  stddev: Asset_stddev_fields
+  stddev_pop: Asset_stddev_pop_fields
+  stddev_samp: Asset_stddev_samp_fields
+  sum: Asset_sum_fields
+  var_pop: Asset_var_pop_fields
+  var_samp: Asset_var_samp_fields
+  variance: Asset_variance_fields
+}
+
+"""aggregate avg on columns"""
+type Asset_avg_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""
+Boolean expression to filter rows from the table "Asset". All fields are combined with a logical 'AND'.
+"""
+input Asset_bool_exp {
+  _and: [Asset_bool_exp!]
+  _not: Asset_bool_exp
+  _or: [Asset_bool_exp!]
+  address: String_comparison_exp
+  campaigns: Campaign_bool_exp
+  campaigns_aggregate: Campaign_aggregate_bool_exp
+  chainId: numeric_comparison_exp
+  decimals: numeric_comparison_exp
+  id: String_comparison_exp
+  name: String_comparison_exp
+  symbol: String_comparison_exp
+}
+
+"""aggregate max on columns"""
+type Asset_max_fields {
+  address: String
+  chainId: numeric
+  decimals: numeric
+  id: String
+  name: String
+  symbol: String
+}
+
+"""aggregate min on columns"""
+type Asset_min_fields {
+  address: String
+  chainId: numeric
+  decimals: numeric
+  id: String
+  name: String
+  symbol: String
+}
+
+"""Ordering options when selecting data from "Asset"."""
+input Asset_order_by {
+  address: order_by
+  campaigns_aggregate: Campaign_aggregate_order_by
+  chainId: order_by
+  decimals: order_by
+  id: order_by
+  name: order_by
+  symbol: order_by
+}
+
+"""
+select columns of table "Asset"
+"""
+enum Asset_select_column {
+  """column name"""
+  address
+
+  """column name"""
+  chainId
+
+  """column name"""
+  decimals
+
+  """column name"""
+  id
+
+  """column name"""
+  name
+
+  """column name"""
+  symbol
+}
+
+"""aggregate stddev on columns"""
+type Asset_stddev_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""aggregate stddev_pop on columns"""
+type Asset_stddev_pop_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""aggregate stddev_samp on columns"""
+type Asset_stddev_samp_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""
+Streaming cursor of the table "Asset"
+"""
+input Asset_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Asset_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Asset_stream_cursor_value_input {
+  address: String
+  chainId: numeric
+  decimals: numeric
+  id: String
+  name: String
+  symbol: String
+}
+
+"""aggregate sum on columns"""
+type Asset_sum_fields {
+  chainId: numeric
+  decimals: numeric
+}
+
+"""aggregate var_pop on columns"""
+type Asset_var_pop_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""aggregate var_samp on columns"""
+type Asset_var_samp_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""aggregate variance on columns"""
+type Asset_variance_fields {
+  chainId: Float
+  decimals: Float
+}
+
+"""
+Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
+"""
+input Boolean_comparison_exp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _is_null: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
+"""
+columns and relationships of "Campaign"
+"""
+type Campaign {
+  """An array relationship"""
+  actions(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): [Action!]!
+
+  """An aggregate relationship"""
+  actions_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): Action_aggregate!
+
+  """An array relationship"""
+  activities(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): [Activity!]!
+
+  """An aggregate relationship"""
+  activities_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): Activity_aggregate!
+  address: String!
+  admin: String!
+  aggregateAmount: numeric!
+
+  """An object relationship"""
+  asset: Asset
+  asset_id: String!
+  campaignStartTime: numeric!
+  category: campaigncategory!
+  chainId: numeric!
+  claimedAmount: numeric!
+  claimedCount: numeric!
+
+  """An object relationship"""
+  clawbackAction: Action
+  clawbackAction_id: String
+  clawbackTime: numeric
+  expiration: numeric
+  expires: Boolean!
+
+  """An object relationship"""
+  factory: Factory
+  factory_id: String!
+  fee: numeric
+  hash: String!
+  id: String!
+  ipfsCID: String!
+  lockup: String
+  name: String
+  nickname: String!
+  position: numeric!
+  root: String!
+  streamCancelable: Boolean
+  streamCliff: Boolean
+  streamCliffDuration: numeric
+  streamCliffPercentage: numeric
+  streamInitial: Boolean
+  streamInitialPercentage: numeric
+  streamShape: String
+  streamStart: Boolean
+  streamStartTime: numeric
+  streamTotalDuration: numeric
+
+  """An array relationship"""
+  streamTranches(
+    """distinct select on columns"""
+    distinct_on: [Tranche_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Tranche_order_by!]
+
+    """filter the rows returned"""
+    where: Tranche_bool_exp
+  ): [Tranche!]!
+  streamTransferable: Boolean
+  subgraphId: numeric!
+  timestamp: numeric!
+  totalRecipients: numeric!
+  version: String!
+}
+
+"""
+aggregated selection of "Campaign"
+"""
+type Campaign_aggregate {
+  aggregate: Campaign_aggregate_fields
+  nodes: [Campaign!]!
+}
+
+input Campaign_aggregate_bool_exp {
+  bool_and: Campaign_aggregate_bool_exp_bool_and
+  bool_or: Campaign_aggregate_bool_exp_bool_or
+  count: Campaign_aggregate_bool_exp_count
+}
+
+input Campaign_aggregate_bool_exp_bool_and {
+  arguments: Campaign_select_column_Campaign_aggregate_bool_exp_bool_and_arguments_columns!
+  distinct: Boolean
+  filter: Campaign_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input Campaign_aggregate_bool_exp_bool_or {
+  arguments: Campaign_select_column_Campaign_aggregate_bool_exp_bool_or_arguments_columns!
+  distinct: Boolean
+  filter: Campaign_bool_exp
+  predicate: Boolean_comparison_exp!
+}
+
+input Campaign_aggregate_bool_exp_count {
+  arguments: [Campaign_select_column!]
+  distinct: Boolean
+  filter: Campaign_bool_exp
+  predicate: Int_comparison_exp!
+}
+
+"""
+aggregate fields of "Campaign"
+"""
+type Campaign_aggregate_fields {
+  avg: Campaign_avg_fields
+  count(columns: [Campaign_select_column!], distinct: Boolean): Int!
+  max: Campaign_max_fields
+  min: Campaign_min_fields
+  stddev: Campaign_stddev_fields
+  stddev_pop: Campaign_stddev_pop_fields
+  stddev_samp: Campaign_stddev_samp_fields
+  sum: Campaign_sum_fields
+  var_pop: Campaign_var_pop_fields
+  var_samp: Campaign_var_samp_fields
+  variance: Campaign_variance_fields
+}
+
+"""
+order by aggregate values of table "Campaign"
+"""
+input Campaign_aggregate_order_by {
+  avg: Campaign_avg_order_by
+  count: order_by
+  max: Campaign_max_order_by
+  min: Campaign_min_order_by
+  stddev: Campaign_stddev_order_by
+  stddev_pop: Campaign_stddev_pop_order_by
+  stddev_samp: Campaign_stddev_samp_order_by
+  sum: Campaign_sum_order_by
+  var_pop: Campaign_var_pop_order_by
+  var_samp: Campaign_var_samp_order_by
+  variance: Campaign_variance_order_by
+}
+
+"""aggregate avg on columns"""
+type Campaign_avg_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by avg() on columns of table "Campaign"
+"""
+input Campaign_avg_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "Campaign". All fields are combined with a logical 'AND'.
+"""
+input Campaign_bool_exp {
+  _and: [Campaign_bool_exp!]
+  _not: Campaign_bool_exp
+  _or: [Campaign_bool_exp!]
+  actions: Action_bool_exp
+  actions_aggregate: Action_aggregate_bool_exp
+  activities: Activity_bool_exp
+  activities_aggregate: Activity_aggregate_bool_exp
+  address: String_comparison_exp
+  admin: String_comparison_exp
+  aggregateAmount: numeric_comparison_exp
+  asset: Asset_bool_exp
+  asset_id: String_comparison_exp
+  campaignStartTime: numeric_comparison_exp
+  category: campaigncategory_comparison_exp
+  chainId: numeric_comparison_exp
+  claimedAmount: numeric_comparison_exp
+  claimedCount: numeric_comparison_exp
+  clawbackAction: Action_bool_exp
+  clawbackAction_id: String_comparison_exp
+  clawbackTime: numeric_comparison_exp
+  expiration: numeric_comparison_exp
+  expires: Boolean_comparison_exp
+  factory: Factory_bool_exp
+  factory_id: String_comparison_exp
+  fee: numeric_comparison_exp
+  hash: String_comparison_exp
+  id: String_comparison_exp
+  ipfsCID: String_comparison_exp
+  lockup: String_comparison_exp
+  name: String_comparison_exp
+  nickname: String_comparison_exp
+  position: numeric_comparison_exp
+  root: String_comparison_exp
+  streamCancelable: Boolean_comparison_exp
+  streamCliff: Boolean_comparison_exp
+  streamCliffDuration: numeric_comparison_exp
+  streamCliffPercentage: numeric_comparison_exp
+  streamInitial: Boolean_comparison_exp
+  streamInitialPercentage: numeric_comparison_exp
+  streamShape: String_comparison_exp
+  streamStart: Boolean_comparison_exp
+  streamStartTime: numeric_comparison_exp
+  streamTotalDuration: numeric_comparison_exp
+  streamTranches: Tranche_bool_exp
+  streamTransferable: Boolean_comparison_exp
+  subgraphId: numeric_comparison_exp
+  timestamp: numeric_comparison_exp
+  totalRecipients: numeric_comparison_exp
+  version: String_comparison_exp
+}
+
+"""aggregate max on columns"""
+type Campaign_max_fields {
+  address: String
+  admin: String
+  aggregateAmount: numeric
+  asset_id: String
+  campaignStartTime: numeric
+  category: campaigncategory
+  chainId: numeric
+  claimedAmount: numeric
+  claimedCount: numeric
+  clawbackAction_id: String
+  clawbackTime: numeric
+  expiration: numeric
+  factory_id: String
+  fee: numeric
+  hash: String
+  id: String
+  ipfsCID: String
+  lockup: String
+  name: String
+  nickname: String
+  position: numeric
+  root: String
+  streamCliffDuration: numeric
+  streamCliffPercentage: numeric
+  streamInitialPercentage: numeric
+  streamShape: String
+  streamStartTime: numeric
+  streamTotalDuration: numeric
+  subgraphId: numeric
+  timestamp: numeric
+  totalRecipients: numeric
+  version: String
+}
+
+"""
+order by max() on columns of table "Campaign"
+"""
+input Campaign_max_order_by {
+  address: order_by
+  admin: order_by
+  aggregateAmount: order_by
+  asset_id: order_by
+  campaignStartTime: order_by
+  category: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackAction_id: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  factory_id: order_by
+  fee: order_by
+  hash: order_by
+  id: order_by
+  ipfsCID: order_by
+  lockup: order_by
+  name: order_by
+  nickname: order_by
+  position: order_by
+  root: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamShape: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+  version: order_by
+}
+
+"""aggregate min on columns"""
+type Campaign_min_fields {
+  address: String
+  admin: String
+  aggregateAmount: numeric
+  asset_id: String
+  campaignStartTime: numeric
+  category: campaigncategory
+  chainId: numeric
+  claimedAmount: numeric
+  claimedCount: numeric
+  clawbackAction_id: String
+  clawbackTime: numeric
+  expiration: numeric
+  factory_id: String
+  fee: numeric
+  hash: String
+  id: String
+  ipfsCID: String
+  lockup: String
+  name: String
+  nickname: String
+  position: numeric
+  root: String
+  streamCliffDuration: numeric
+  streamCliffPercentage: numeric
+  streamInitialPercentage: numeric
+  streamShape: String
+  streamStartTime: numeric
+  streamTotalDuration: numeric
+  subgraphId: numeric
+  timestamp: numeric
+  totalRecipients: numeric
+  version: String
+}
+
+"""
+order by min() on columns of table "Campaign"
+"""
+input Campaign_min_order_by {
+  address: order_by
+  admin: order_by
+  aggregateAmount: order_by
+  asset_id: order_by
+  campaignStartTime: order_by
+  category: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackAction_id: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  factory_id: order_by
+  fee: order_by
+  hash: order_by
+  id: order_by
+  ipfsCID: order_by
+  lockup: order_by
+  name: order_by
+  nickname: order_by
+  position: order_by
+  root: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamShape: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+  version: order_by
+}
+
+"""Ordering options when selecting data from "Campaign"."""
+input Campaign_order_by {
+  actions_aggregate: Action_aggregate_order_by
+  activities_aggregate: Activity_aggregate_order_by
+  address: order_by
+  admin: order_by
+  aggregateAmount: order_by
+  asset: Asset_order_by
+  asset_id: order_by
+  campaignStartTime: order_by
+  category: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackAction: Action_order_by
+  clawbackAction_id: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  expires: order_by
+  factory: Factory_order_by
+  factory_id: order_by
+  fee: order_by
+  hash: order_by
+  id: order_by
+  ipfsCID: order_by
+  lockup: order_by
+  name: order_by
+  nickname: order_by
+  position: order_by
+  root: order_by
+  streamCancelable: order_by
+  streamCliff: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitial: order_by
+  streamInitialPercentage: order_by
+  streamShape: order_by
+  streamStart: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  streamTranches_aggregate: Tranche_aggregate_order_by
+  streamTransferable: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+  version: order_by
+}
+
+"""
+select columns of table "Campaign"
+"""
+enum Campaign_select_column {
+  """column name"""
+  address
+
+  """column name"""
+  admin
+
+  """column name"""
+  aggregateAmount
+
+  """column name"""
+  asset_id
+
+  """column name"""
+  campaignStartTime
+
+  """column name"""
+  category
+
+  """column name"""
+  chainId
+
+  """column name"""
+  claimedAmount
+
+  """column name"""
+  claimedCount
+
+  """column name"""
+  clawbackAction_id
+
+  """column name"""
+  clawbackTime
+
+  """column name"""
+  expiration
+
+  """column name"""
+  expires
+
+  """column name"""
+  factory_id
+
+  """column name"""
+  fee
+
+  """column name"""
+  hash
+
+  """column name"""
+  id
+
+  """column name"""
+  ipfsCID
+
+  """column name"""
+  lockup
+
+  """column name"""
+  name
+
+  """column name"""
+  nickname
+
+  """column name"""
+  position
+
+  """column name"""
+  root
+
+  """column name"""
+  streamCancelable
+
+  """column name"""
+  streamCliff
+
+  """column name"""
+  streamCliffDuration
+
+  """column name"""
+  streamCliffPercentage
+
+  """column name"""
+  streamInitial
+
+  """column name"""
+  streamInitialPercentage
+
+  """column name"""
+  streamShape
+
+  """column name"""
+  streamStart
+
+  """column name"""
+  streamStartTime
+
+  """column name"""
+  streamTotalDuration
+
+  """column name"""
+  streamTransferable
+
+  """column name"""
+  subgraphId
+
+  """column name"""
+  timestamp
+
+  """column name"""
+  totalRecipients
+
+  """column name"""
+  version
+}
+
+"""
+select "Campaign_aggregate_bool_exp_bool_and_arguments_columns" columns of table "Campaign"
+"""
+enum Campaign_select_column_Campaign_aggregate_bool_exp_bool_and_arguments_columns {
+  """column name"""
+  expires
+
+  """column name"""
+  streamCancelable
+
+  """column name"""
+  streamCliff
+
+  """column name"""
+  streamInitial
+
+  """column name"""
+  streamStart
+
+  """column name"""
+  streamTransferable
+}
+
+"""
+select "Campaign_aggregate_bool_exp_bool_or_arguments_columns" columns of table "Campaign"
+"""
+enum Campaign_select_column_Campaign_aggregate_bool_exp_bool_or_arguments_columns {
+  """column name"""
+  expires
+
+  """column name"""
+  streamCancelable
+
+  """column name"""
+  streamCliff
+
+  """column name"""
+  streamInitial
+
+  """column name"""
+  streamStart
+
+  """column name"""
+  streamTransferable
+}
+
+"""aggregate stddev on columns"""
+type Campaign_stddev_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by stddev() on columns of table "Campaign"
+"""
+input Campaign_stddev_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""aggregate stddev_pop on columns"""
+type Campaign_stddev_pop_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by stddev_pop() on columns of table "Campaign"
+"""
+input Campaign_stddev_pop_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""aggregate stddev_samp on columns"""
+type Campaign_stddev_samp_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by stddev_samp() on columns of table "Campaign"
+"""
+input Campaign_stddev_samp_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""
+Streaming cursor of the table "Campaign"
+"""
+input Campaign_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Campaign_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Campaign_stream_cursor_value_input {
+  address: String
+  admin: String
+  aggregateAmount: numeric
+  asset_id: String
+  campaignStartTime: numeric
+  category: campaigncategory
+  chainId: numeric
+  claimedAmount: numeric
+  claimedCount: numeric
+  clawbackAction_id: String
+  clawbackTime: numeric
+  expiration: numeric
+  expires: Boolean
+  factory_id: String
+  fee: numeric
+  hash: String
+  id: String
+  ipfsCID: String
+  lockup: String
+  name: String
+  nickname: String
+  position: numeric
+  root: String
+  streamCancelable: Boolean
+  streamCliff: Boolean
+  streamCliffDuration: numeric
+  streamCliffPercentage: numeric
+  streamInitial: Boolean
+  streamInitialPercentage: numeric
+  streamShape: String
+  streamStart: Boolean
+  streamStartTime: numeric
+  streamTotalDuration: numeric
+  streamTransferable: Boolean
+  subgraphId: numeric
+  timestamp: numeric
+  totalRecipients: numeric
+  version: String
+}
+
+"""aggregate sum on columns"""
+type Campaign_sum_fields {
+  aggregateAmount: numeric
+  campaignStartTime: numeric
+  chainId: numeric
+  claimedAmount: numeric
+  claimedCount: numeric
+  clawbackTime: numeric
+  expiration: numeric
+  fee: numeric
+  position: numeric
+  streamCliffDuration: numeric
+  streamCliffPercentage: numeric
+  streamInitialPercentage: numeric
+  streamStartTime: numeric
+  streamTotalDuration: numeric
+  subgraphId: numeric
+  timestamp: numeric
+  totalRecipients: numeric
+}
+
+"""
+order by sum() on columns of table "Campaign"
+"""
+input Campaign_sum_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""aggregate var_pop on columns"""
+type Campaign_var_pop_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by var_pop() on columns of table "Campaign"
+"""
+input Campaign_var_pop_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""aggregate var_samp on columns"""
+type Campaign_var_samp_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by var_samp() on columns of table "Campaign"
+"""
+input Campaign_var_samp_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+"""aggregate variance on columns"""
+type Campaign_variance_fields {
+  aggregateAmount: Float
+  campaignStartTime: Float
+  chainId: Float
+  claimedAmount: Float
+  claimedCount: Float
+  clawbackTime: Float
+  expiration: Float
+  fee: Float
+  position: Float
+  streamCliffDuration: Float
+  streamCliffPercentage: Float
+  streamInitialPercentage: Float
+  streamStartTime: Float
+  streamTotalDuration: Float
+  subgraphId: Float
+  timestamp: Float
+  totalRecipients: Float
+}
+
+"""
+order by variance() on columns of table "Campaign"
+"""
+input Campaign_variance_order_by {
+  aggregateAmount: order_by
+  campaignStartTime: order_by
+  chainId: order_by
+  claimedAmount: order_by
+  claimedCount: order_by
+  clawbackTime: order_by
+  expiration: order_by
+  fee: order_by
+  position: order_by
+  streamCliffDuration: order_by
+  streamCliffPercentage: order_by
+  streamInitialPercentage: order_by
+  streamStartTime: order_by
+  streamTotalDuration: order_by
+  subgraphId: order_by
+  timestamp: order_by
+  totalRecipients: order_by
+}
+
+scalar campaigncategory
+
+"""
+Boolean expression to compare columns of type "campaigncategory". All fields are combined with logical 'AND'.
+"""
+input campaigncategory_comparison_exp {
+  _eq: campaigncategory
+  _gt: campaigncategory
+  _gte: campaigncategory
+  _in: [campaigncategory!]
+  _is_null: Boolean
+  _lt: campaigncategory
+  _lte: campaigncategory
+  _neq: campaigncategory
+  _nin: [campaigncategory!]
+}
+
+"""
+columns and relationships of "chain_metadata"
+"""
+type chain_metadata {
+  block_height: Int
+  chain_id: Int
+  end_block: Int
+  first_event_block_number: Int
+  is_hyper_sync: Boolean
+  latest_fetched_block_number: Int
+  latest_processed_block: Int
+  num_batches_fetched: Int
+  num_events_processed: Int
+  start_block: Int
+  timestamp_caught_up_to_head_or_endblock: timestamptz
+}
+
+"""
+Boolean expression to filter rows from the table "chain_metadata". All fields are combined with a logical 'AND'.
+"""
+input chain_metadata_bool_exp {
+  _and: [chain_metadata_bool_exp!]
+  _not: chain_metadata_bool_exp
+  _or: [chain_metadata_bool_exp!]
+  block_height: Int_comparison_exp
+  chain_id: Int_comparison_exp
+  end_block: Int_comparison_exp
+  first_event_block_number: Int_comparison_exp
+  is_hyper_sync: Boolean_comparison_exp
+  latest_fetched_block_number: Int_comparison_exp
+  latest_processed_block: Int_comparison_exp
+  num_batches_fetched: Int_comparison_exp
+  num_events_processed: Int_comparison_exp
+  start_block: Int_comparison_exp
+  timestamp_caught_up_to_head_or_endblock: timestamptz_comparison_exp
+}
+
+"""Ordering options when selecting data from "chain_metadata"."""
+input chain_metadata_order_by {
+  block_height: order_by
+  chain_id: order_by
+  end_block: order_by
+  first_event_block_number: order_by
+  is_hyper_sync: order_by
+  latest_fetched_block_number: order_by
+  latest_processed_block: order_by
+  num_batches_fetched: order_by
+  num_events_processed: order_by
+  start_block: order_by
+  timestamp_caught_up_to_head_or_endblock: order_by
+}
+
+"""
+select columns of table "chain_metadata"
+"""
+enum chain_metadata_select_column {
+  """column name"""
+  block_height
+
+  """column name"""
+  chain_id
+
+  """column name"""
+  end_block
+
+  """column name"""
+  first_event_block_number
+
+  """column name"""
+  is_hyper_sync
+
+  """column name"""
+  latest_fetched_block_number
+
+  """column name"""
+  latest_processed_block
+
+  """column name"""
+  num_batches_fetched
+
+  """column name"""
+  num_events_processed
+
+  """column name"""
+  start_block
+
+  """column name"""
+  timestamp_caught_up_to_head_or_endblock
+}
+
+"""
+Streaming cursor of the table "chain_metadata"
+"""
+input chain_metadata_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: chain_metadata_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input chain_metadata_stream_cursor_value_input {
+  block_height: Int
+  chain_id: Int
+  end_block: Int
+  first_event_block_number: Int
+  is_hyper_sync: Boolean
+  latest_fetched_block_number: Int
+  latest_processed_block: Int
+  num_batches_fetched: Int
+  num_events_processed: Int
+  start_block: Int
+  timestamp_caught_up_to_head_or_endblock: timestamptz
+}
+
+"""ordering argument of a cursor"""
+enum cursor_ordering {
+  """ascending ordering of the cursor"""
+  ASC
+
+  """descending ordering of the cursor"""
+  DESC
+}
+
+"""
+columns and relationships of "Factory"
+"""
+type Factory {
+  address: String!
+  alias: String!
+  campaignCounter: numeric!
+
+  """An array relationship"""
+  campaigns(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): [Campaign!]!
+
+  """An aggregate relationship"""
+  campaigns_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): Campaign_aggregate!
+  chainId: numeric!
+  id: String!
+}
+
+"""
+Boolean expression to filter rows from the table "Factory". All fields are combined with a logical 'AND'.
+"""
+input Factory_bool_exp {
+  _and: [Factory_bool_exp!]
+  _not: Factory_bool_exp
+  _or: [Factory_bool_exp!]
+  address: String_comparison_exp
+  alias: String_comparison_exp
+  campaignCounter: numeric_comparison_exp
+  campaigns: Campaign_bool_exp
+  campaigns_aggregate: Campaign_aggregate_bool_exp
+  chainId: numeric_comparison_exp
+  id: String_comparison_exp
+}
+
+"""Ordering options when selecting data from "Factory"."""
+input Factory_order_by {
+  address: order_by
+  alias: order_by
+  campaignCounter: order_by
+  campaigns_aggregate: Campaign_aggregate_order_by
+  chainId: order_by
+  id: order_by
+}
+
+"""
+select columns of table "Factory"
+"""
+enum Factory_select_column {
+  """column name"""
+  address
+
+  """column name"""
+  alias
+
+  """column name"""
+  campaignCounter
+
+  """column name"""
+  chainId
+
+  """column name"""
+  id
+}
+
+"""
+Streaming cursor of the table "Factory"
+"""
+input Factory_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Factory_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Factory_stream_cursor_value_input {
+  address: String
+  alias: String
+  campaignCounter: numeric
+  chainId: numeric
+  id: String
+}
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _is_null: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
+scalar jsonb
+
+input jsonb_cast_exp {
+  String: String_comparison_exp
+}
+
+"""
+Boolean expression to compare columns of type "jsonb". All fields are combined with logical 'AND'.
+"""
+input jsonb_comparison_exp {
+  _cast: jsonb_cast_exp
+
+  """is the column contained in the given json value"""
+  _contained_in: jsonb
+
+  """does the column contain the given json value at the top level"""
+  _contains: jsonb
+  _eq: jsonb
+  _gt: jsonb
+  _gte: jsonb
+
+  """does the string exist as a top-level key in the column"""
+  _has_key: String
+
+  """do all of these strings exist as top-level keys in the column"""
+  _has_keys_all: [String!]
+
+  """do any of these strings exist as top-level keys in the column"""
+  _has_keys_any: [String!]
+  _in: [jsonb!]
+  _is_null: Boolean
+  _lt: jsonb
+  _lte: jsonb
+  _neq: jsonb
+  _nin: [jsonb!]
+}
+
+scalar numeric
+
+"""
+Boolean expression to compare columns of type "numeric". All fields are combined with logical 'AND'.
+"""
+input numeric_comparison_exp {
+  _eq: numeric
+  _gt: numeric
+  _gte: numeric
+  _in: [numeric!]
+  _is_null: Boolean
+  _lt: numeric
+  _lte: numeric
+  _neq: numeric
+  _nin: [numeric!]
+}
+
+"""column ordering options"""
+enum order_by {
+  """in ascending order, nulls last"""
+  asc
+
+  """in ascending order, nulls first"""
+  asc_nulls_first
+
+  """in ascending order, nulls last"""
+  asc_nulls_last
+
+  """in descending order, nulls first"""
+  desc
+
+  """in descending order, nulls first"""
+  desc_nulls_first
+
+  """in descending order, nulls last"""
+  desc_nulls_last
+}
+
+type query_root {
+  """
+  fetch data from the table: "Action"
+  """
+  Action(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): [Action!]!
+
+  """
+  fetch aggregated fields from the table: "Action"
+  """
+  Action_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): Action_aggregate!
+
+  """fetch data from the table: "Action" using primary key columns"""
+  Action_by_pk(id: String!): Action
+
+  """
+  fetch data from the table: "Activity"
+  """
+  Activity(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): [Activity!]!
+
+  """
+  fetch aggregated fields from the table: "Activity"
+  """
+  Activity_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): Activity_aggregate!
+
+  """fetch data from the table: "Activity" using primary key columns"""
+  Activity_by_pk(id: String!): Activity
+
+  """
+  fetch data from the table: "Asset"
+  """
+  Asset(
+    """distinct select on columns"""
+    distinct_on: [Asset_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Asset_order_by!]
+
+    """filter the rows returned"""
+    where: Asset_bool_exp
+  ): [Asset!]!
+
+  """
+  fetch aggregated fields from the table: "Asset"
+  """
+  Asset_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Asset_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Asset_order_by!]
+
+    """filter the rows returned"""
+    where: Asset_bool_exp
+  ): Asset_aggregate!
+
+  """fetch data from the table: "Asset" using primary key columns"""
+  Asset_by_pk(id: String!): Asset
+
+  """
+  fetch data from the table: "Campaign"
+  """
+  Campaign(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): [Campaign!]!
+
+  """
+  fetch aggregated fields from the table: "Campaign"
+  """
+  Campaign_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): Campaign_aggregate!
+
+  """fetch data from the table: "Campaign" using primary key columns"""
+  Campaign_by_pk(id: String!): Campaign
+
+  """
+  fetch data from the table: "Factory"
+  """
+  Factory(
+    """distinct select on columns"""
+    distinct_on: [Factory_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Factory_order_by!]
+
+    """filter the rows returned"""
+    where: Factory_bool_exp
+  ): [Factory!]!
+
+  """fetch data from the table: "Factory" using primary key columns"""
+  Factory_by_pk(id: String!): Factory
+
+  """
+  fetch data from the table: "Tranche"
+  """
+  Tranche(
+    """distinct select on columns"""
+    distinct_on: [Tranche_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Tranche_order_by!]
+
+    """filter the rows returned"""
+    where: Tranche_bool_exp
+  ): [Tranche!]!
+
+  """fetch data from the table: "Tranche" using primary key columns"""
+  Tranche_by_pk(id: String!): Tranche
+
+  """
+  fetch data from the table: "Watcher"
+  """
+  Watcher(
+    """distinct select on columns"""
+    distinct_on: [Watcher_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Watcher_order_by!]
+
+    """filter the rows returned"""
+    where: Watcher_bool_exp
+  ): [Watcher!]!
+
+  """fetch data from the table: "Watcher" using primary key columns"""
+  Watcher_by_pk(id: String!): Watcher
+
+  """
+  fetch data from the table: "_meta"
+  """
+  _meta(
+    """distinct select on columns"""
+    distinct_on: [_meta_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [_meta_order_by!]
+
+    """filter the rows returned"""
+    where: _meta_bool_exp
+  ): [_meta!]!
+
+  """
+  fetch data from the table: "chain_metadata"
+  """
+  chain_metadata(
+    """distinct select on columns"""
+    distinct_on: [chain_metadata_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [chain_metadata_order_by!]
+
+    """filter the rows returned"""
+    where: chain_metadata_bool_exp
+  ): [chain_metadata!]!
+
+  """
+  fetch data from the table: "raw_events"
+  """
+  raw_events(
+    """distinct select on columns"""
+    distinct_on: [raw_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [raw_events_order_by!]
+
+    """filter the rows returned"""
+    where: raw_events_bool_exp
+  ): [raw_events!]!
+
+  """fetch data from the table: "raw_events" using primary key columns"""
+  raw_events_by_pk(serial: Int!): raw_events
+}
+
+"""
+columns and relationships of "raw_events"
+"""
+type raw_events {
+  block_fields(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  block_hash: String!
+  block_number: Int!
+  block_timestamp: Int!
+  chain_id: Int!
+  contract_name: String!
+  event_id: numeric!
+  event_name: String!
+  log_index: Int!
+  params(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+  serial: Int!
+  src_address: String!
+  transaction_fields(
+    """JSON select path"""
+    path: String
+  ): jsonb!
+}
+
+"""
+Boolean expression to filter rows from the table "raw_events". All fields are combined with a logical 'AND'.
+"""
+input raw_events_bool_exp {
+  _and: [raw_events_bool_exp!]
+  _not: raw_events_bool_exp
+  _or: [raw_events_bool_exp!]
+  block_fields: jsonb_comparison_exp
+  block_hash: String_comparison_exp
+  block_number: Int_comparison_exp
+  block_timestamp: Int_comparison_exp
+  chain_id: Int_comparison_exp
+  contract_name: String_comparison_exp
+  event_id: numeric_comparison_exp
+  event_name: String_comparison_exp
+  log_index: Int_comparison_exp
+  params: jsonb_comparison_exp
+  serial: Int_comparison_exp
+  src_address: String_comparison_exp
+  transaction_fields: jsonb_comparison_exp
+}
+
+"""Ordering options when selecting data from "raw_events"."""
+input raw_events_order_by {
+  block_fields: order_by
+  block_hash: order_by
+  block_number: order_by
+  block_timestamp: order_by
+  chain_id: order_by
+  contract_name: order_by
+  event_id: order_by
+  event_name: order_by
+  log_index: order_by
+  params: order_by
+  serial: order_by
+  src_address: order_by
+  transaction_fields: order_by
+}
+
+"""
+select columns of table "raw_events"
+"""
+enum raw_events_select_column {
+  """column name"""
+  block_fields
+
+  """column name"""
+  block_hash
+
+  """column name"""
+  block_number
+
+  """column name"""
+  block_timestamp
+
+  """column name"""
+  chain_id
+
+  """column name"""
+  contract_name
+
+  """column name"""
+  event_id
+
+  """column name"""
+  event_name
+
+  """column name"""
+  log_index
+
+  """column name"""
+  params
+
+  """column name"""
+  serial
+
+  """column name"""
+  src_address
+
+  """column name"""
+  transaction_fields
+}
+
+"""
+Streaming cursor of the table "raw_events"
+"""
+input raw_events_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: raw_events_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input raw_events_stream_cursor_value_input {
+  block_fields: jsonb
+  block_hash: String
+  block_number: Int
+  block_timestamp: Int
+  chain_id: Int
+  contract_name: String
+  event_id: numeric
+  event_name: String
+  log_index: Int
+  params: jsonb
+  serial: Int
+  src_address: String
+  transaction_fields: jsonb
+}
+
+"""
+Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+
+  """does the column match the given case-insensitive pattern"""
+  _ilike: String
+  _in: [String!]
+
+  """
+  does the column match the given POSIX regular expression, case insensitive
+  """
+  _iregex: String
+  _is_null: Boolean
+
+  """does the column match the given pattern"""
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+
+  """does the column NOT match the given case-insensitive pattern"""
+  _nilike: String
+  _nin: [String!]
+
+  """
+  does the column NOT match the given POSIX regular expression, case insensitive
+  """
+  _niregex: String
+
+  """does the column NOT match the given pattern"""
+  _nlike: String
+
+  """
+  does the column NOT match the given POSIX regular expression, case sensitive
+  """
+  _nregex: String
+
+  """does the column NOT match the given SQL regular expression"""
+  _nsimilar: String
+
+  """
+  does the column match the given POSIX regular expression, case sensitive
+  """
+  _regex: String
+
+  """does the column match the given SQL regular expression"""
+  _similar: String
+}
+
+type subscription_root {
+  """
+  fetch data from the table: "Action"
+  """
+  Action(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): [Action!]!
+
+  """
+  fetch aggregated fields from the table: "Action"
+  """
+  Action_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Action_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Action_order_by!]
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): Action_aggregate!
+
+  """fetch data from the table: "Action" using primary key columns"""
+  Action_by_pk(id: String!): Action
+
+  """
+  fetch data from the table in a streaming manner: "Action"
+  """
+  Action_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Action_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Action_bool_exp
+  ): [Action!]!
+
+  """
+  fetch data from the table: "Activity"
+  """
+  Activity(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): [Activity!]!
+
+  """
+  fetch aggregated fields from the table: "Activity"
+  """
+  Activity_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Activity_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Activity_order_by!]
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): Activity_aggregate!
+
+  """fetch data from the table: "Activity" using primary key columns"""
+  Activity_by_pk(id: String!): Activity
+
+  """
+  fetch data from the table in a streaming manner: "Activity"
+  """
+  Activity_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Activity_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Activity_bool_exp
+  ): [Activity!]!
+
+  """
+  fetch data from the table: "Asset"
+  """
+  Asset(
+    """distinct select on columns"""
+    distinct_on: [Asset_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Asset_order_by!]
+
+    """filter the rows returned"""
+    where: Asset_bool_exp
+  ): [Asset!]!
+
+  """
+  fetch aggregated fields from the table: "Asset"
+  """
+  Asset_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Asset_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Asset_order_by!]
+
+    """filter the rows returned"""
+    where: Asset_bool_exp
+  ): Asset_aggregate!
+
+  """fetch data from the table: "Asset" using primary key columns"""
+  Asset_by_pk(id: String!): Asset
+
+  """
+  fetch data from the table in a streaming manner: "Asset"
+  """
+  Asset_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Asset_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Asset_bool_exp
+  ): [Asset!]!
+
+  """
+  fetch data from the table: "Campaign"
+  """
+  Campaign(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): [Campaign!]!
+
+  """
+  fetch aggregated fields from the table: "Campaign"
+  """
+  Campaign_aggregate(
+    """distinct select on columns"""
+    distinct_on: [Campaign_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Campaign_order_by!]
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): Campaign_aggregate!
+
+  """fetch data from the table: "Campaign" using primary key columns"""
+  Campaign_by_pk(id: String!): Campaign
+
+  """
+  fetch data from the table in a streaming manner: "Campaign"
+  """
+  Campaign_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Campaign_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Campaign_bool_exp
+  ): [Campaign!]!
+
+  """
+  fetch data from the table: "Factory"
+  """
+  Factory(
+    """distinct select on columns"""
+    distinct_on: [Factory_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Factory_order_by!]
+
+    """filter the rows returned"""
+    where: Factory_bool_exp
+  ): [Factory!]!
+
+  """fetch data from the table: "Factory" using primary key columns"""
+  Factory_by_pk(id: String!): Factory
+
+  """
+  fetch data from the table in a streaming manner: "Factory"
+  """
+  Factory_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Factory_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Factory_bool_exp
+  ): [Factory!]!
+
+  """
+  fetch data from the table: "Tranche"
+  """
+  Tranche(
+    """distinct select on columns"""
+    distinct_on: [Tranche_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Tranche_order_by!]
+
+    """filter the rows returned"""
+    where: Tranche_bool_exp
+  ): [Tranche!]!
+
+  """fetch data from the table: "Tranche" using primary key columns"""
+  Tranche_by_pk(id: String!): Tranche
+
+  """
+  fetch data from the table in a streaming manner: "Tranche"
+  """
+  Tranche_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Tranche_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Tranche_bool_exp
+  ): [Tranche!]!
+
+  """
+  fetch data from the table: "Watcher"
+  """
+  Watcher(
+    """distinct select on columns"""
+    distinct_on: [Watcher_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [Watcher_order_by!]
+
+    """filter the rows returned"""
+    where: Watcher_bool_exp
+  ): [Watcher!]!
+
+  """fetch data from the table: "Watcher" using primary key columns"""
+  Watcher_by_pk(id: String!): Watcher
+
+  """
+  fetch data from the table in a streaming manner: "Watcher"
+  """
+  Watcher_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [Watcher_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: Watcher_bool_exp
+  ): [Watcher!]!
+
+  """
+  fetch data from the table: "_meta"
+  """
+  _meta(
+    """distinct select on columns"""
+    distinct_on: [_meta_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [_meta_order_by!]
+
+    """filter the rows returned"""
+    where: _meta_bool_exp
+  ): [_meta!]!
+
+  """
+  fetch data from the table in a streaming manner: "_meta"
+  """
+  _meta_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [_meta_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: _meta_bool_exp
+  ): [_meta!]!
+
+  """
+  fetch data from the table: "chain_metadata"
+  """
+  chain_metadata(
+    """distinct select on columns"""
+    distinct_on: [chain_metadata_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [chain_metadata_order_by!]
+
+    """filter the rows returned"""
+    where: chain_metadata_bool_exp
+  ): [chain_metadata!]!
+
+  """
+  fetch data from the table in a streaming manner: "chain_metadata"
+  """
+  chain_metadata_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [chain_metadata_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: chain_metadata_bool_exp
+  ): [chain_metadata!]!
+
+  """
+  fetch data from the table: "raw_events"
+  """
+  raw_events(
+    """distinct select on columns"""
+    distinct_on: [raw_events_select_column!]
+
+    """limit the number of rows returned"""
+    limit: Int
+
+    """skip the first n rows. Use only with order_by"""
+    offset: Int
+
+    """sort the rows by one or more columns"""
+    order_by: [raw_events_order_by!]
+
+    """filter the rows returned"""
+    where: raw_events_bool_exp
+  ): [raw_events!]!
+
+  """fetch data from the table: "raw_events" using primary key columns"""
+  raw_events_by_pk(serial: Int!): raw_events
+
+  """
+  fetch data from the table in a streaming manner: "raw_events"
+  """
+  raw_events_stream(
+    """maximum number of rows returned in a single batch"""
+    batch_size: Int!
+
+    """cursor to stream the results returned by the query"""
+    cursor: [raw_events_stream_cursor_input]!
+
+    """filter the rows returned"""
+    where: raw_events_bool_exp
+  ): [raw_events!]!
+}
+
+scalar timestamptz
+
+"""
+Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
+"""
+input timestamptz_comparison_exp {
+  _eq: timestamptz
+  _gt: timestamptz
+  _gte: timestamptz
+  _in: [timestamptz!]
+  _is_null: Boolean
+  _lt: timestamptz
+  _lte: timestamptz
+  _neq: timestamptz
+  _nin: [timestamptz!]
+}
+
+"""
+columns and relationships of "Tranche"
+"""
+type Tranche {
+  """An object relationship"""
+  campaign: Campaign
+  campaign_id: String!
+  duration: numeric!
+  endDuration: numeric!
+  endPercentage: numeric!
+  id: String!
+  percentage: numeric!
+  position: numeric!
+  startDuration: numeric!
+  startPercentage: numeric!
+}
+
+"""
+order by aggregate values of table "Tranche"
+"""
+input Tranche_aggregate_order_by {
+  avg: Tranche_avg_order_by
+  count: order_by
+  max: Tranche_max_order_by
+  min: Tranche_min_order_by
+  stddev: Tranche_stddev_order_by
+  stddev_pop: Tranche_stddev_pop_order_by
+  stddev_samp: Tranche_stddev_samp_order_by
+  sum: Tranche_sum_order_by
+  var_pop: Tranche_var_pop_order_by
+  var_samp: Tranche_var_samp_order_by
+  variance: Tranche_variance_order_by
+}
+
+"""
+order by avg() on columns of table "Tranche"
+"""
+input Tranche_avg_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+Boolean expression to filter rows from the table "Tranche". All fields are combined with a logical 'AND'.
+"""
+input Tranche_bool_exp {
+  _and: [Tranche_bool_exp!]
+  _not: Tranche_bool_exp
+  _or: [Tranche_bool_exp!]
+  campaign: Campaign_bool_exp
+  campaign_id: String_comparison_exp
+  duration: numeric_comparison_exp
+  endDuration: numeric_comparison_exp
+  endPercentage: numeric_comparison_exp
+  id: String_comparison_exp
+  percentage: numeric_comparison_exp
+  position: numeric_comparison_exp
+  startDuration: numeric_comparison_exp
+  startPercentage: numeric_comparison_exp
+}
+
+"""
+order by max() on columns of table "Tranche"
+"""
+input Tranche_max_order_by {
+  campaign_id: order_by
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  id: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by min() on columns of table "Tranche"
+"""
+input Tranche_min_order_by {
+  campaign_id: order_by
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  id: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""Ordering options when selecting data from "Tranche"."""
+input Tranche_order_by {
+  campaign: Campaign_order_by
+  campaign_id: order_by
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  id: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+select columns of table "Tranche"
+"""
+enum Tranche_select_column {
+  """column name"""
+  campaign_id
+
+  """column name"""
+  duration
+
+  """column name"""
+  endDuration
+
+  """column name"""
+  endPercentage
+
+  """column name"""
+  id
+
+  """column name"""
+  percentage
+
+  """column name"""
+  position
+
+  """column name"""
+  startDuration
+
+  """column name"""
+  startPercentage
+}
+
+"""
+order by stddev() on columns of table "Tranche"
+"""
+input Tranche_stddev_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by stddev_pop() on columns of table "Tranche"
+"""
+input Tranche_stddev_pop_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by stddev_samp() on columns of table "Tranche"
+"""
+input Tranche_stddev_samp_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+Streaming cursor of the table "Tranche"
+"""
+input Tranche_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Tranche_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Tranche_stream_cursor_value_input {
+  campaign_id: String
+  duration: numeric
+  endDuration: numeric
+  endPercentage: numeric
+  id: String
+  percentage: numeric
+  position: numeric
+  startDuration: numeric
+  startPercentage: numeric
+}
+
+"""
+order by sum() on columns of table "Tranche"
+"""
+input Tranche_sum_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by var_pop() on columns of table "Tranche"
+"""
+input Tranche_var_pop_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by var_samp() on columns of table "Tranche"
+"""
+input Tranche_var_samp_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+order by variance() on columns of table "Tranche"
+"""
+input Tranche_variance_order_by {
+  duration: order_by
+  endDuration: order_by
+  endPercentage: order_by
+  percentage: order_by
+  position: order_by
+  startDuration: order_by
+  startPercentage: order_by
+}
+
+"""
+columns and relationships of "Watcher"
+"""
+type Watcher {
+  actionCounter: numeric!
+  campaignCounter: numeric!
+  chainId: numeric!
+  id: String!
+}
+
+"""
+Boolean expression to filter rows from the table "Watcher". All fields are combined with a logical 'AND'.
+"""
+input Watcher_bool_exp {
+  _and: [Watcher_bool_exp!]
+  _not: Watcher_bool_exp
+  _or: [Watcher_bool_exp!]
+  actionCounter: numeric_comparison_exp
+  campaignCounter: numeric_comparison_exp
+  chainId: numeric_comparison_exp
+  id: String_comparison_exp
+}
+
+"""Ordering options when selecting data from "Watcher"."""
+input Watcher_order_by {
+  actionCounter: order_by
+  campaignCounter: order_by
+  chainId: order_by
+  id: order_by
+}
+
+"""
+select columns of table "Watcher"
+"""
+enum Watcher_select_column {
+  """column name"""
+  actionCounter
+
+  """column name"""
+  campaignCounter
+
+  """column name"""
+  chainId
+
+  """column name"""
+  id
+}
+
+"""
+Streaming cursor of the table "Watcher"
+"""
+input Watcher_stream_cursor_input {
+  """Stream column input with initial value"""
+  initial_value: Watcher_stream_cursor_value_input!
+
+  """cursor ordering"""
+  ordering: cursor_ordering
+}
+
+"""Initial value of the column from where the streaming should start"""
+input Watcher_stream_cursor_value_input {
+  actionCounter: numeric
+  campaignCounter: numeric
+  chainId: numeric
+  id: String
+}
+

@@ -23,10 +23,9 @@ fn fixed32_to_h256(x: &impl AsRef<[u8]>) -> H256 {
 fn hs_to_ethers_log(lg: &HsLog) -> Option<EthersLog> {
     let addr = lg.address.as_ref()?;
     let txh = lg.transaction_hash.as_ref()?;
-    let bn_u = lg.block_number.as_ref()?; // UInt
+    let bn_u = lg.block_number.as_ref()?;
     let data = lg.data.as_ref()?;
 
-    // UInt implements Into<u64> in hypersync-client simple types
     let bn: u64 = u64::from(*bn_u);
 
     let topics: Vec<H256> = lg
@@ -47,7 +46,8 @@ fn hs_to_ethers_log(lg: &HsLog) -> Option<EthersLog> {
 }
 
 pub async fn decode_log(
-    chain: String,
+    chain_id: u64,
+    chain_name: String,
     log: HsLog,
     registry: PairRegistry,
     pricing: PricingEngine,
@@ -63,7 +63,7 @@ pub async fn decode_log(
     };
 
     let pool = log.address;
-    let meta = match registry.get(&pool) {
+    let meta = match registry.get(chain_id, &pool) {
         Some(m) => m,
         None => return Ok(()),
     };
@@ -75,21 +75,20 @@ pub async fn decode_log(
 
     // Uniswap V2 Swap
     if topic0 == topic("Swap(address,uint256,uint256,uint256,uint256,address)") {
-        let ev = crate::dex::uniswap_v2::decode_swap(chain, &meta, &log, raw)?;
+        let ev = crate::dex::uniswap_v2::decode_swap(chain_id, chain_name, &meta, &log, raw)?;
         return normalize_and_update(&pricing, ev).await;
     }
 
-    // Uniswap V2 Sync (reserve updates)
+    // Uniswap V2 Sync
     if topic0 == topic("Sync(uint112,uint112)") {
-        let ev = crate::dex::uniswap_v2::decode_sync(chain, &meta, &log, raw)?;
+        let ev = crate::dex::uniswap_v2::decode_sync(chain_id, chain_name, &meta, &log, raw)?;
         return normalize_and_update(&pricing, ev).await;
     }
 
     // Algebra Swap (UniV3-style signature)
     if topic0 == topic("Swap(address,address,int256,int256,uint160,uint128,int24)") {
-        // only handle if this pool was tagged as algebra
         if meta.dex.to_lowercase().contains("algebra") {
-            let ev = crate::dex::algebra::decode_swap(chain, &meta, &log, raw)?;
+            let ev = crate::dex::algebra::decode_swap(chain_id, chain_name, &meta, &log, raw)?;
             return normalize_and_update(&pricing, ev).await;
         }
     }

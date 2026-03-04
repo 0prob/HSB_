@@ -1,0 +1,6 @@
+{
+	"devDependencies": {
+		"graphql": "^16.13.1",
+		"get-graphql-schema": "^2.1.2"
+	}
+}

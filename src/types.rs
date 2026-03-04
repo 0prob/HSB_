@@ -1,8 +1,30 @@
 use ethers::types::{Address, H256, U256};
 use serde::{Deserialize, Serialize};
+use std::hash::{Hash, Hasher};
+
+/// Canonical pool identifier across chains.
+/// This prevents collisions where the same 20-byte address exists on multiple chains.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct PoolKey {
+    pub chain_id: u64,
+    pub pool: Address,
+}
+
+impl PartialEq for PoolKey {
+    fn eq(&self, other: &Self) -> bool {
+        self.chain_id == other.chain_id && self.pool == other.pool
+    }
+}
+impl Eq for PoolKey {}
+
+impl Hash for PoolKey {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.chain_id.hash(state);
+        self.pool.hash(state);
+    }
+}
 
 /// Unified swap event type across all DEXes.
-/// This allows the engine to normalize Uniswap V2, V3, Curve, Balancer, Algebra, etc.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum SwapType {
     UniswapV2Swap,
@@ -16,9 +38,9 @@ pub enum SwapType {
 }
 
 /// Normalized swap event emitted by the HyperSync decoder.
-/// Every DEX event is converted into this unified structure.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SwapEvent {
+    pub chain_id: u64,
     pub chain: String,
     pub pool: Address,
     pub block_number: u64,
@@ -41,9 +63,9 @@ pub struct SwapEvent {
 }
 
 /// Metadata for each discovered pool.
-/// Populated by HyperIndex discovery and enriched by on-chain queries.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PairMeta {
+    pub chain_id: u64,
     pub chain: String,
     pub dex: String,
     pub pool: Address,

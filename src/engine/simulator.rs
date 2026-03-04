@@ -15,14 +15,26 @@ pub struct SimulationResult {
 
 #[derive(Clone)]
 pub struct ProfitSimulator {
+    chain_id: u64,
     gas: GasModel,
     registry: PairRegistry,
     decimals: DecimalsCache,
 }
 
 impl ProfitSimulator {
-    pub fn new(gas: GasModel, registry: PairRegistry, _pricing: crate::engine::pricing::PricingEngine, decimals: DecimalsCache) -> Self {
-        Self { gas, registry, decimals }
+    pub fn new(
+        chain_id: u64,
+        gas: GasModel,
+        registry: PairRegistry,
+        _pricing: crate::engine::pricing::PricingEngine,
+        decimals: DecimalsCache,
+    ) -> Self {
+        Self {
+            chain_id,
+            gas,
+            registry,
+            decimals,
+        }
     }
 
     fn v2_swap_out(amount_in: U256, reserve_in: U256, reserve_out: U256) -> Option<U256> {
@@ -34,14 +46,17 @@ impl ProfitSimulator {
 
         let amount_in_with_fee = amount_in.checked_mul(fee_mul)?;
         let numerator = amount_in_with_fee.checked_mul(reserve_out)?;
-        let denominator = reserve_in.checked_mul(fee_den)?.checked_add(amount_in_with_fee)?;
+        let denominator = reserve_in
+            .checked_mul(fee_den)?
+            .checked_add(amount_in_with_fee)?;
         numerator.checked_div(denominator)
     }
 
     fn stable_kind(token: Address) -> bool {
+        // NOTE: these are Polygon addresses. Multi-chain stable catalogs should move to config later.
         let usdc: Address = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174".parse().unwrap();
         let usdt: Address = "0xC2132D05D31c914a87C6611C10748AEb04B58e8F".parse().unwrap();
-        let dai:  Address = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063".parse().unwrap();
+        let dai: Address = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063".parse().unwrap();
         token == usdc || token == usdt || token == dai
     }
 
@@ -54,8 +69,15 @@ impl ProfitSimulator {
         (amt.as_u128() as f64) / denom
     }
 
-    fn orient_reserves(&self, pool: Address, token_in: Address, token_out: Address, reserve0: U256, reserve1: U256) -> Option<(U256, U256)> {
-        let meta = self.registry.get(&pool)?;
+    fn orient_reserves(
+        &self,
+        pool: Address,
+        token_in: Address,
+        token_out: Address,
+        reserve0: U256,
+        reserve1: U256,
+    ) -> Option<(U256, U256)> {
+        let meta = self.registry.get(self.chain_id, &pool)?;
         if token_in == meta.token0 && token_out == meta.token1 {
             Some((reserve0, reserve1))
         } else if token_in == meta.token1 && token_out == meta.token0 {
@@ -96,28 +118,44 @@ impl ProfitSimulator {
         let a = route.tokens[0];
         let b = route.tokens[1];
 
-        let (r_in1, r_out1) = self.orient_reserves(route.pools[0], a, b, p1_r0, p1_r1)
+        let (r_in1, r_out1) = self
+            .orient_reserves(route.pools[0], a, b, p1_r0, p1_r1)
             .ok_or_else(|| anyhow!("cannot orient hop1 reserves"))?;
 
         if !Self::require_liquidity(r_in1, amount_in) {
-            return Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 });
+            return Ok(SimulationResult {
+                profitable: false,
+                profit_usd: 0.0,
+                gas_usd: 0.0,
+            });
         }
 
-        let out1 = Self::v2_swap_out(amount_in, r_in1, r_out1).ok_or_else(|| anyhow!("swap math failed hop1"))?;
+        let out1 = Self::v2_swap_out(amount_in, r_in1, r_out1)
+            .ok_or_else(|| anyhow!("swap math failed hop1"))?;
 
-        let (r_in2, r_out2) = self.orient_reserves(route.pools[1], b, a, p2_r0, p2_r1)
+        let (r_in2, r_out2) = self
+            .orient_reserves(route.pools[1], b, a, p2_r0, p2_r1)
             .ok_or_else(|| anyhow!("cannot orient hop2 reserves"))?;
 
         if !Self::require_liquidity(r_in2, out1) {
-            return Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 });
+            return Ok(SimulationResult {
+                profitable: false,
+                profit_usd: 0.0,
+                gas_usd: 0.0,
+            });
         }
 
-        let out2 = Self::v2_swap_out(out1, r_in2, r_out2).ok_or_else(|| anyhow!("swap math failed hop2"))?;
+        let out2 = Self::v2_swap_out(out1, r_in2, r_out2)
+            .ok_or_else(|| anyhow!("swap math failed hop2"))?;
 
         // Slippage haircut
         let slip = U256::from(slippage_bps);
         let denom = U256::from(10_000u64);
-        let slip_amt = out2.checked_mul(slip).unwrap_or(U256::zero()).checked_div(denom).unwrap_or(U256::zero());
+        let slip_amt = out2
+            .checked_mul(slip)
+            .unwrap_or(U256::zero())
+            .checked_div(denom)
+            .unwrap_or(U256::zero());
         let out2_adj = out2.saturating_sub(slip_amt);
 
         let profit_token = out2_adj.saturating_sub(amount_in);
@@ -128,7 +166,11 @@ impl ProfitSimulator {
 
         let profitable = Self::stable_kind(a) && profit_usd >= min_profit_usd;
 
-        Ok(SimulationResult { profitable, profit_usd, gas_usd })
+        Ok(SimulationResult {
+            profitable,
+            profit_usd,
+            gas_usd,
+        })
     }
 
     pub async fn simulate_triangle_snapshot(
@@ -144,41 +186,66 @@ impl ProfitSimulator {
         slippage_bps: u32,
         min_profit_usd: f64,
     ) -> Result<SimulationResult> {
-        // tokens [A,B,C,A]
         let a = tri.tokens[0];
         let b = tri.tokens[1];
         let c = tri.tokens[2];
 
-        let (r_in1, r_out1) = self.orient_reserves(tri.pools[0], a, b, p1_r0, p1_r1)
+        let (r_in1, r_out1) = self
+            .orient_reserves(tri.pools[0], a, b, p1_r0, p1_r1)
             .ok_or_else(|| anyhow!("cannot orient hop1 reserves"))?;
         if !Self::require_liquidity(r_in1, amount_in) {
-            return Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 });
+            return Ok(SimulationResult {
+                profitable: false,
+                profit_usd: 0.0,
+                gas_usd: 0.0,
+            });
         }
-        let out1 = Self::v2_swap_out(amount_in, r_in1, r_out1).ok_or_else(|| anyhow!("swap math failed hop1"))?;
+        let out1 = Self::v2_swap_out(amount_in, r_in1, r_out1)
+            .ok_or_else(|| anyhow!("swap math failed hop1"))?;
 
-        let (r_in2, r_out2) = self.orient_reserves(tri.pools[1], b, c, p2_r0, p2_r1)
+        let (r_in2, r_out2) = self
+            .orient_reserves(tri.pools[1], b, c, p2_r0, p2_r1)
             .ok_or_else(|| anyhow!("cannot orient hop2 reserves"))?;
         if !Self::require_liquidity(r_in2, out1) {
-            return Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 });
+            return Ok(SimulationResult {
+                profitable: false,
+                profit_usd: 0.0,
+                gas_usd: 0.0,
+            });
         }
-        let out2 = Self::v2_swap_out(out1, r_in2, r_out2).ok_or_else(|| anyhow!("swap math failed hop2"))?;
+        let out2 = Self::v2_swap_out(out1, r_in2, r_out2)
+            .ok_or_else(|| anyhow!("swap math failed hop2"))?;
 
-        let (r_in3, r_out3) = self.orient_reserves(tri.pools[2], c, a, p3_r0, p3_r1)
+        let (r_in3, r_out3) = self
+            .orient_reserves(tri.pools[2], c, a, p3_r0, p3_r1)
             .ok_or_else(|| anyhow!("cannot orient hop3 reserves"))?;
         if !Self::require_liquidity(r_in3, out2) {
-            return Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 });
+            return Ok(SimulationResult {
+                profitable: false,
+                profit_usd: 0.0,
+                gas_usd: 0.0,
+            });
         }
-        let out3 = Self::v2_swap_out(out2, r_in3, r_out3).ok_or_else(|| anyhow!("swap math failed hop3"))?;
+        let out3 = Self::v2_swap_out(out2, r_in3, r_out3)
+            .ok_or_else(|| anyhow!("swap math failed hop3"))?;
 
         let slip = U256::from(slippage_bps);
         let denom = U256::from(10_000u64);
-        let slip_amt = out3.checked_mul(slip).unwrap_or(U256::zero()).checked_div(denom).unwrap_or(U256::zero());
+        let slip_amt = out3
+            .checked_mul(slip)
+            .unwrap_or(U256::zero())
+            .checked_div(denom)
+            .unwrap_or(U256::zero());
         let out3_adj = out3.saturating_sub(slip_amt);
 
         let profit_token = out3_adj.saturating_sub(amount_in);
 
         // Gas cost: approximate 3-hop by a pseudo Route
-        let pseudo = Route { pools: vec![tri.pools[0], tri.pools[1], tri.pools[2]], tokens: vec![a,b,c,a], price: tri.composite_price };
+        let pseudo = Route {
+            pools: vec![tri.pools[0], tri.pools[1], tri.pools[2]],
+            tokens: vec![a, b, c, a],
+            price: tri.composite_price,
+        };
         let gas_usd = self.gas.estimate_route_cost(&pseudo)?;
 
         let profit_usd_gross = self.token_amount_to_usd(a, profit_token).await;
@@ -186,7 +253,11 @@ impl ProfitSimulator {
 
         let profitable = Self::stable_kind(a) && profit_usd >= min_profit_usd;
 
-        Ok(SimulationResult { profitable, profit_usd, gas_usd })
+        Ok(SimulationResult {
+            profitable,
+            profit_usd,
+            gas_usd,
+        })
     }
 
     pub async fn simulate_triangular(
@@ -196,6 +267,10 @@ impl ProfitSimulator {
         _slippage_bps: u32,
         _min_profit_usd: f64,
     ) -> Result<SimulationResult> {
-        Ok(SimulationResult { profitable: false, profit_usd: 0.0, gas_usd: 0.0 })
+        Ok(SimulationResult {
+            profitable: false,
+            profit_usd: 0.0,
+            gas_usd: 0.0,
+        })
     }
 }

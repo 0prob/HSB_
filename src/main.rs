@@ -6,7 +6,7 @@ use tracing_subscriber::EnvFilter;
 
 mod types;
 mod ui;
-mod universe; // <-- REQUIRED so `crate::universe::...` resolves in the bin crate
+mod universe;
 
 mod engine {
     pub mod registry;
@@ -107,7 +107,7 @@ async fn main() -> Result<()> {
         h.set_status("spawning discovery & streaming tasks…").await;
     }
 
-    // HyperIndex discovery (pool catalog) with progress updates
+    // HyperIndex discovery
     for chain in chains.clone() {
         let reg = registry.clone();
         let cli = client.clone();
@@ -143,12 +143,13 @@ async fn main() -> Result<()> {
 
         let ui = ui_handle.clone();
         let chain_name = chain.name.clone();
+        let chain_id = chain.chain_id;
         let reg_for_ui = registry.clone();
 
         tokio::spawn(async move {
             loop {
                 if let Some(h) = &ui {
-                    let pools = reg_for_ui.by_chain(&chain_name).len();
+                    let pools = reg_for_ui.by_chain_id(chain_id).len();
                     h.set_pools(&chain_name, pools).await;
                 }
                 let _ = engine.act().await;

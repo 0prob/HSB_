@@ -5,11 +5,18 @@ use ethers::types::{Log, U256};
 use crate::engine::pricing::PricingEngine;
 use crate::types::{PairMeta, SwapEvent, SwapType};
 
-pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+pub fn decode_swap(
+    chain_id: u64,
+    chain: String,
+    meta: &PairMeta,
+    log: &Log,
+    raw: RawLog,
+) -> Result<SwapEvent> {
     let (amount0_in, amount1_in, amount0_out, amount1_out): (U256, U256, U256, U256) =
         AbiDecode::decode(raw.data)?;
 
     Ok(SwapEvent {
+        chain_id,
         chain,
         pool: meta.pool,
         block_number: log.block_number.unwrap().as_u64(),
@@ -28,10 +35,17 @@ pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Re
     })
 }
 
-pub fn decode_sync(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+pub fn decode_sync(
+    chain_id: u64,
+    chain: String,
+    meta: &PairMeta,
+    log: &Log,
+    raw: RawLog,
+) -> Result<SwapEvent> {
     let (reserve0, reserve1): (U256, U256) = AbiDecode::decode(raw.data)?;
 
     Ok(SwapEvent {
+        chain_id,
         chain,
         pool: meta.pool,
         block_number: log.block_number.unwrap().as_u64(),
