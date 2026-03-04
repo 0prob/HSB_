@@ -6,6 +6,7 @@ use tracing_subscriber::EnvFilter;
 
 mod types;
 mod ui;
+mod universe; // <-- REQUIRED so `crate::universe::...` resolves in the bin crate
 
 mod engine {
     pub mod registry;
@@ -61,7 +62,6 @@ async fn main() -> Result<()> {
     let tui = env_bool("TUI", false);
 
     if tui {
-        // Log to file so stdout is reserved for TUI
         let file = std::fs::OpenOptions::new()
             .create(true)
             .append(true)
@@ -117,8 +117,7 @@ async fn main() -> Result<()> {
         });
     }
 
-    // HyperSync subscriber (your current implementation may differ; this keeps signature stable)
-    // If your hypersync/subscriber.rs requires pricing, adjust accordingly.
+    // HyperSync subscriber
     for chain in chains.clone() {
         let reg = registry.clone();
         let pr = pricing.clone();
@@ -142,7 +141,6 @@ async fn main() -> Result<()> {
 
         let engine = ArbEngine::new(chain.clone(), reg, pr, dec, snap, gas);
 
-        // crude UI updates: pools count
         let ui = ui_handle.clone();
         let chain_name = chain.name.clone();
         let reg_for_ui = registry.clone();
@@ -159,7 +157,6 @@ async fn main() -> Result<()> {
         });
     }
 
-    // Keep main alive
     loop {
         sleep(Duration::from_secs(60)).await;
     }

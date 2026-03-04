@@ -24,16 +24,12 @@ pub struct ChainUi {
     pub enabled: bool,
     pub pools: usize,
 
-    // HyperIndex “catalog load” progress
     pub hyperindex_target: usize,
     pub hyperindex_loaded: usize,
     pub hyperindex_percent: f64,
-    pub hyperindex_status: String, // "starting", "loading", "ready", "error"
+    pub hyperindex_status: String,
 
-    // latest known block (optional)
     pub last_block: Option<u64>,
-
-    // last profitable opportunity (optional)
     pub last_profit_usd: Option<f64>,
 
     pub last_update: Instant,
@@ -55,7 +51,7 @@ impl ChainUi {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub struct UiState {
     pub chains: BTreeMap<String, ChainUi>,
     pub status_line: String,
@@ -129,7 +125,6 @@ impl UiHandle {
     }
 }
 
-/// Run the TUI until user presses 'q' or Ctrl+C terminates the process.
 pub async fn run_tui(handle: UiHandle) -> anyhow::Result<()> {
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -141,7 +136,6 @@ pub async fn run_tui(handle: UiHandle) -> anyhow::Result<()> {
     let tick_rate = Duration::from_millis(120);
 
     loop {
-        // Input
         if event::poll(Duration::from_millis(1))? {
             if let Event::Key(k) = event::read()? {
                 if k.code == KeyCode::Char('q') {
@@ -150,7 +144,6 @@ pub async fn run_tui(handle: UiHandle) -> anyhow::Result<()> {
             }
         }
 
-        // Render
         let st = handle.state();
         let snapshot = { st.read().await.clone() };
 
@@ -160,10 +153,10 @@ pub async fn run_tui(handle: UiHandle) -> anyhow::Result<()> {
             let chunks = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints([
-                    Constraint::Length(3),  // header
-                    Constraint::Length(3),  // global progress
-                    Constraint::Min(8),     // table
-                    Constraint::Length(3),  // footer
+                    Constraint::Length(3),
+                    Constraint::Length(3),
+                    Constraint::Min(8),
+                    Constraint::Length(3),
                 ])
                 .split(size);
 
@@ -176,7 +169,6 @@ pub async fn run_tui(handle: UiHandle) -> anyhow::Result<()> {
         tokio::time::sleep(tick_rate).await;
     }
 
-    // Cleanup
     disable_raw_mode()?;
     execute!(terminal.backend_mut(), LeaveAlternateScreen)?;
     terminal.show_cursor()?;
@@ -196,7 +188,6 @@ fn render_header(f: &mut ratatui::Frame, area: Rect, status: &str) {
 }
 
 fn render_global_progress(f: &mut ratatui::Frame, area: Rect, st: &UiState) {
-    // global hyperindex progress = average of enabled chains with target>0
     let mut sum = 0.0;
     let mut n = 0.0;
     for (_name, c) in &st.chains {
@@ -259,8 +250,7 @@ fn render_footer(f: &mut ratatui::Frame, area: Rect) {
     let p = Paragraph::new(Line::from(vec![
         Span::raw("Keys: "),
         Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
-        Span::raw(" to quit TUI (process continues only if you run under supervisor). "),
-        Span::raw("Use "),
+        Span::raw(" to quit TUI. Use "),
         Span::styled("TUI=1", Style::default().add_modifier(Modifier::BOLD)),
         Span::raw(" to enable."),
     ]))
