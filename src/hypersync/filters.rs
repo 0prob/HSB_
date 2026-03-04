@@ -1,36 +1,38 @@
+use anyhow::Result;
 use hypersync_client::net_types::LogFilter;
+
 use crate::engine::registry::PairRegistry;
 use crate::types::ChainConfig;
 
-/// Build a dynamic HyperSync filter for all pools on a chain.
-/// Includes all DEX event signatures relevant to this engine.
-pub fn build_filter(chain: &ChainConfig, registry: &PairRegistry) -> LogFilter {
-    let addrs: Vec<String> = registry
+/// Build a HyperSync LogFilter for the current registry pools.
+///
+/// NOTE: This is intentionally conservative and focuses on the
+/// event set that your decoders support reliably.
+pub fn build_filter(chain: &ChainConfig, registry: &PairRegistry) -> Result<LogFilter> {
+    let addrs = registry
         .by_chain(&chain.name)
-        .iter()
-        .map(|p| format!("{:?}", p.pool))
-        .collect();
+        .into_iter()
+        .map(|m| format!("{:#x}", m.pool))
+        .collect::<Vec<_>>();
 
-    // Event signatures for all supported DEXes.
-    // These are topic0 values.
-    let topics = vec![vec![
-        // Uniswap V2 Swap
-        format!("{:?}", ethers::utils::id("Swap(address,uint256,uint256,uint256,uint256,address)")),
-        // Uniswap V2 Sync
-        format!("{:?}", ethers::utils::id("Sync(uint112,uint112)")),
-        // Uniswap V3 Swap
-        format!("{:?}", ethers::utils::id("Swap(address,address,int256,int256,uint160,uint128,int24)")),
-        // Curve Exchange
-        format!("{:?}", ethers::utils::id("TokenExchange(address,int128,uint256,int128,uint256)")),
-        // Balancer Swap
-        format!("{:?}", ethers::utils::id("Swap(address,address,address,uint256,uint256)")),
-        // Algebra/Maverick Swap
-        format!("{:?}", ethers::utils::id("Swap(address,address,int256,int256,uint160,uint128,int24)")),
-    ]];
+    // topic0 values for events we decode
+    let topics0 = vec![
+        // UniswapV2 Swap
+        format!("0x{}", ethers::utils::hex::encode(ethers::utils::keccak256("Swap(address,uint256,uint256,uint256,uint256,address)".as_bytes()))),
+        // UniswapV2 Sync
+        format!("0x{}", ethers::utils::hex::encode(ethers::utils::keccak256("Sync(uint112,uint112)".as_bytes()))),
+        // UniswapV3/Algebra Swap signature (same)
+        format!("0x{}", ethers::utils::hex::encode(ethers::utils::keccak256("Swap(address,address,int256,int256,uint160,uint128,int24)".as_bytes()))),
+        // Curve TokenExchange (common)
+        format!("0x{}", ethers::utils::hex::encode(ethers::utils::keccak256("TokenExchange(address,int128,uint256,int128,uint256)".as_bytes()))),
+        // Balancer Swap (Vault event)
+        format!("0x{}", ethers::utils::hex::encode(ethers::utils::keccak256("Swap(address,address,address,uint256,uint256)".as_bytes()))),
+    ];
 
-    LogFilter {
-        addresses: Some(addrs),
-        topics: Some(topics),
-        ..Default::default()
+    let mut f = LogFilter::all();
+    if !addrs.is_empty() {
+        f = f.and_address(addrs)?;
     }
+    f = f.and_topic0(topics0)?;
+    Ok(f)
 }

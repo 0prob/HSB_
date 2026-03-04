@@ -2,18 +2,12 @@ use anyhow::Result;
 use ethers::abi::{AbiDecode, RawLog};
 use ethers::types::{Log, U256};
 
-use crate::types::{SwapEvent, SwapType, PairMeta};
+use crate::engine::pricing::PricingEngine;
+use crate::types::{PairMeta, SwapEvent, SwapType};
 
-/// Decode a Uniswap V2 Swap event.
-pub fn decode_swap(
-    chain: String,
-    meta: &PairMeta,
-    log: &Log,
-    raw: RawLog,
-) -> Result<SwapEvent> {
-    // Swap(address,uint256,uint256,uint256,uint256,address)
-    let decoded: (ethers::types::Address, U256, U256, U256, U256, ethers::types::Address) =
-        AbiDecode::decode(raw.data.as_ref())?;
+pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+    let (amount0_in, amount1_in, amount0_out, amount1_out): (U256, U256, U256, U256) =
+        AbiDecode::decode(raw.data)?;
 
     Ok(SwapEvent {
         chain,
@@ -22,10 +16,10 @@ pub fn decode_swap(
         tx_hash: log.transaction_hash.unwrap(),
         event_type: SwapType::UniswapV2Swap,
 
-        amount0_in: Some(decoded.1),
-        amount1_in: Some(decoded.2),
-        amount0_out: Some(decoded.3),
-        amount1_out: Some(decoded.4),
+        amount0_in: Some(amount0_in),
+        amount1_in: Some(amount1_in),
+        amount0_out: Some(amount0_out),
+        amount1_out: Some(amount1_out),
 
         reserve0: None,
         reserve1: None,
@@ -34,15 +28,8 @@ pub fn decode_swap(
     })
 }
 
-/// Decode a Uniswap V2 Sync event.
-pub fn decode_sync(
-    chain: String,
-    meta: &PairMeta,
-    log: &Log,
-    raw: RawLog,
-) -> Result<SwapEvent> {
-    // Sync(uint112,uint112)
-    let decoded: (U256, U256) = AbiDecode::decode(raw.data.as_ref())?;
+pub fn decode_sync(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+    let (reserve0, reserve1): (U256, U256) = AbiDecode::decode(raw.data)?;
 
     Ok(SwapEvent {
         chain,
@@ -56,36 +43,18 @@ pub fn decode_sync(
         amount0_out: None,
         amount1_out: None,
 
-        reserve0: Some(decoded.0),
-        reserve1: Some(decoded.1),
+        reserve0: Some(reserve0),
+        reserve1: Some(reserve1),
         tick: None,
         liquidity: None,
     })
 }
 
-/// Handle a normalized V2 swap event.
-/// This is where you forward into pricing/arb logic.
-pub async fn handle_swap(ev: SwapEvent) -> Result<()> {
-    tracing::debug!(
-        "[V2 Swap] pool={} amount0_in={} amount1_in={}",
-        ev.pool,
-        ev.amount0_in.unwrap_or_default(),
-        ev.amount1_in.unwrap_or_default()
-    );
-
-    // TODO: integrate with pricing engine
+pub async fn handle_swap(_ev: SwapEvent, _pricing: &PricingEngine) -> Result<()> {
+    // IMPORTANT: ignore Swap events for V2 pricing (unstable without direction/decimals).
     Ok(())
 }
 
-/// Handle a normalized V2 sync event.
-pub async fn handle_sync(ev: SwapEvent) -> Result<()> {
-    tracing::debug!(
-        "[V2 Sync] pool={} reserve0={} reserve1={}",
-        ev.pool,
-        ev.reserve0.unwrap_or_default(),
-        ev.reserve1.unwrap_or_default()
-    );
-
-    // TODO: integrate with pricing engine
-    Ok(())
+pub async fn handle_sync(ev: SwapEvent, pricing: &PricingEngine) -> Result<()> {
+    pricing.update_v2_sync(ev).await
 }

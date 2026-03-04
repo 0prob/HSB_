@@ -2,9 +2,16 @@ enabled = false
 name = "ethereum"
 chain_id = 1
 
-rpc_url = "https://mainnet.infura.io/v3/YOUR_KEY"
-hypersync_url = "wss://ethereum.hypersync.example"
-hyperindex_url = "https://ethereum.hyperindex.example/graphql"
+# HyperRPC (fast JSON-RPC)
+# Official endpoints: https://eth.rpc.hypersync.xyz or https://1.rpc.hypersync.xyz
+rpc_url = "https://1.rpc.hypersync.xyz"
+
+# HyperSync (direct data API)
+# Official endpoints: https://eth.hypersync.xyz or https://1.hypersync.xyz
+hypersync_url = "https://1.hypersync.xyz"
+
+# HyperIndex (GraphQL) — fill with your deployed indexer endpoint for Ethereum
+hyperindex_url = "https://indexer.hyperindex.xyz/REPLACE_WITH_PROJECT_ID/v1/graphql"
 
 [gas]
 max_gwei = 80.0

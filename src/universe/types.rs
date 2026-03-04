@@ -1,29 +1,37 @@
-use serde::{Deserialize, Serialize};
+use ethers::types::Address;
+use std::collections::HashSet;
 
-#[derive(Debug, Deserialize)]
-pub struct Protocol {
-    pub name: String,
-    pub category: String,
-    pub chains: Vec<String>,
-    pub tvl: f64,
+#[derive(Debug, Clone)]
+pub struct UniverseConfig {
+    pub chain: String,
+
+    // If non-empty: tokens must be in this set OR be base tokens
+    pub allowed_tokens: HashSet<Address>,
+
+    // Always excluded
+    pub denied_tokens: HashSet<Address>,
+
+    // Base tokens (routing anchors)
+    pub base_tokens: HashSet<Address>,
+    pub require_base_token: bool,
+
+    // Optional DEX tag filtering (PairMeta.dex contains any of these substrings; case-insensitive)
+    pub allowed_dex_substrings: Vec<String>,
+
+    // Cap registry growth
+    pub max_pools: usize,
 }
 
-#[derive(Debug, Deserialize)]
-pub struct ChainTvl {
-    pub name: String,
-    pub tvl: f64,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Stablecoin {
-    pub symbol: String,
-    pub circulating: f64,
-    pub chains: Vec<String>,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct Universe {
-    pub allowed_chains: Vec<String>,
-    pub allowed_dexes: Vec<String>,
-    pub allowed_tokens: Vec<String>,
+impl UniverseConfig {
+    pub fn empty(chain: &str) -> Self {
+        Self {
+            chain: chain.to_string(),
+            allowed_tokens: HashSet::new(),
+            denied_tokens: HashSet::new(),
+            base_tokens: HashSet::new(),
+            require_base_token: true,
+            allowed_dex_substrings: vec![],
+            max_pools: 50_000,
+        }
+    }
 }

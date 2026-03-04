@@ -2,23 +2,11 @@ use anyhow::Result;
 use ethers::abi::{AbiDecode, RawLog};
 use ethers::types::{Log, U256};
 
-use crate::types::{SwapEvent, SwapType, PairMeta};
+use crate::types::{PairMeta, SwapEvent, SwapType};
 
-/// Balancer V2 Swap event:
-/// Swap(address poolId, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut)
-pub fn decode_swap(
-    chain: String,
-    meta: &PairMeta,
-    log: &Log,
-    raw: RawLog,
-) -> Result<SwapEvent> {
-    let decoded: (
-        ethers::types::Address,
-        ethers::types::Address,
-        ethers::types::Address,
-        U256,
-        U256
-    ) = AbiDecode::decode(raw.data.as_ref())?;
+pub fn decode_swap(chain: String, meta: &PairMeta, log: &Log, raw: RawLog) -> Result<SwapEvent> {
+    let (_pool_id, _token_in, _token_out, amount_in, amount_out): (ethers::types::H256, ethers::types::Address, ethers::types::Address, U256, U256) =
+        AbiDecode::decode(raw.data)?;
 
     Ok(SwapEvent {
         chain,
@@ -26,27 +14,13 @@ pub fn decode_swap(
         block_number: log.block_number.unwrap().as_u64(),
         tx_hash: log.transaction_hash.unwrap(),
         event_type: SwapType::BalancerSwap,
-
-        amount0_in: Some(decoded.3),
+        amount0_in: Some(amount_in),
+        amount0_out: Some(amount_out),
         amount1_in: None,
-        amount0_out: Some(decoded.4),
         amount1_out: None,
-
         reserve0: None,
         reserve1: None,
         tick: None,
         liquidity: None,
     })
-}
-
-pub async fn handle_swap(ev: SwapEvent) -> Result<()> {
-    tracing::debug!(
-        "[Balancer Swap] pool={} in={} out={}",
-        ev.pool,
-        ev.amount0_in.unwrap_or_default(),
-        ev.amount0_out.unwrap_or_default()
-    );
-
-    // TODO: integrate with pricing engine
-    Ok(())
 }

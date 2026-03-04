@@ -2,9 +2,16 @@ enabled = false
 name = "arbitrum"
 chain_id = 42161
 
-rpc_url = "https://arb1.arbitrum.io/rpc"
-hypersync_url = "wss://arbitrum.hypersync.example"
-hyperindex_url = "https://arbitrum.hyperindex.example/graphql"
+# HyperRPC (fast JSON-RPC)
+# Official endpoints: https://arbitrum.rpc.hypersync.xyz or https://42161.rpc.hypersync.xyz
+rpc_url = "https://42161.rpc.hypersync.xyz"
+
+# HyperSync (direct data API)
+# Official endpoints: https://arbitrum.hypersync.xyz or https://42161.hypersync.xyz
+hypersync_url = "https://42161.hypersync.xyz"
+
+# HyperIndex (GraphQL) — fill with your deployed indexer endpoint for Arbitrum
+hyperindex_url = "https://indexer.hyperindex.xyz/REPLACE_WITH_PROJECT_ID/v1/graphql"
 
 [gas]
 max_gwei = 5.0

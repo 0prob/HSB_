@@ -2,59 +2,67 @@ enabled = true
 name = "polygon"
 chain_id = 137
 
-rpc_url = "https://polygon-rpc.com"
-hypersync_url = "wss://polygon.hypersync.example"   # replace with real HyperSync endpoint
-hyperindex_url = "https://polygon.hyperindex.example/graphql"  # replace with real HyperIndex endpoint
+# HyperRPC (fast JSON-RPC)
+# Official endpoints: https://polygon.rpc.hypersync.xyz or https://137.rpc.hypersync.xyz
+rpc_url = "https://137.rpc.hypersync.xyz"
+
+# HyperSync (direct data API)
+# Official endpoints: https://polygon.hypersync.xyz or https://137.hypersync.xyz
+hypersync_url = "https://137.hypersync.xyz"
+
+# HyperIndex pool catalog (GraphQL)
+# Using your provided public indexer instance
+hyperindex_url = "https://indexer.hyperindex.xyz/508d217/v1/graphql"
 
 [gas]
-# rough defaults; tune after measuring
+# conservative defaults for Polygon; tune based on actual inclusion rate
 max_gwei = 80.0
 priority_gwei = 5.0
 block_time_seconds = 2.1
 
 [execution]
-# address of deployed ArbExecutor on Polygon
+# address of deployed ArbExecutor on Polygon (fill when you enable execution)
 executor_address = "0x0000000000000000000000000000000000000000"
-slippage_bps = 50          # 0.50%
+slippage_bps = 50
 min_profit_usd = 5.0
 max_route_hops = 4
 
+# DEX toggles are kept for future expansion; current bot focuses on V2 + Algebra
 [dex.uniswap_v2]
 enabled = true
-factory = "0x0000000000000000000000000000000000000000"
+factory = "0x5757371414417b8c6caad45baef941abc7d3ab32" # QuickSwap V2 factory
 init_code_hash = "0x0000000000000000000000000000000000000000000000000000000000000000"
 
 [dex.uniswap_v3]
-enabled = true
+enabled = false
 factory = "0x0000000000000000000000000000000000000000"
 quoter = "0x0000000000000000000000000000000000000000"
 
 [dex.quickswap]
-enabled = true
-factory = "0x0000000000000000000000000000000000000000"
+enabled = false
+factory = "0x5757371414417b8c6caad45baef941abc7d3ab32"
 
 [dex.sushiswap]
-enabled = true
+enabled = false
 factory = "0x0000000000000000000000000000000000000000"
 
 [dex.curve]
-enabled = true
+enabled = false
 registry = "0x0000000000000000000000000000000000000000"
 
 [dex.balancer]
-enabled = true
+enabled = false
 vault = "0x0000000000000000000000000000000000000000"
 
 [dex.algebra]
 enabled = true
-factory = "0x0000000000000000000000000000000000000000"
+factory = "0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28" # QuickSwap Algebra factory
 
 [tokens]
-# canonical stablecoins and routing hubs on Polygon
-# fill with real addresses as you wire this up
-usdc = "0x0000000000000000000000000000000000000000"
-usdt = "0x0000000000000000000000000000000000000000"
-dai  = "0x0000000000000000000000000000000000000000"
-weth = "0x0000000000000000000000000000000000000000"
-wbtc = "0x0000000000000000000000000000000000000000"
-wmatic = "0x0000000000000000000000000000000000000000"
+# Polygon mainnet canonical addresses
+usdc   = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+usdt   = "0xC2132D05D31c914a87C6611C10748AEb04B58e8F"
+dai    = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063"
+weth   = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
+wbtc   = "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"
+wmatic = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270"

@@ -1,25 +1,15 @@
 use anyhow::Result;
+use arbitrage_engine::types::ChainConfig;
 use arbitrage_engine::universe::filter::UniverseFilter;
 
-#[tokio::main]
-async fn main() -> Result<()> {
-    let filter = UniverseFilter::new();
-    let uni = filter.build().await?;
+fn load_chain(path: &str) -> Result<ChainConfig> {
+    let raw = std::fs::read_to_string(path)?;
+    Ok(toml::from_str(&raw)?)
+}
 
-    std::fs::create_dir_all("universe")?;
-    std::fs::write(
-        "universe/allowed_chains.json",
-        serde_json::to_string_pretty(&uni.allowed_chains)?,
-    )?;
-    std::fs::write(
-        "universe/allowed_dexes.json",
-        serde_json::to_string_pretty(&uni.allowed_dexes)?,
-    )?;
-    std::fs::write(
-        "universe/allowed_tokens.json",
-        serde_json::to_string_pretty(&uni.allowed_tokens)?,
-    )?;
-
-    println!("Universe built.");
+fn main() -> Result<()> {
+    let chain = load_chain("config/polygon.toml")?;
+    let _filter = UniverseFilter::from_chain(&chain)?;
+    println!("Universe filter initialized for {}", chain.name);
     Ok(())
 }

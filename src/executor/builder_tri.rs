@@ -1,9 +1,9 @@
 use anyhow::Result;
 use ethers::types::{Address, U256};
 
-use crate::executor::types::EncodedRoute;
-use crate::executor::encode::encode_uniswap_v2_swap;
 use crate::engine::routing::TriRoute;
+use crate::executor::encode::encode_uniswap_v2_swap;
+use crate::executor::types::EncodedRoute;
 
 /// Triangular builder assumes V2-style pools for now (A->B->C->A).
 pub struct TriCalldataBuilder;
@@ -23,32 +23,17 @@ impl TriCalldataBuilder {
         let mut data = Vec::new();
 
         // A -> B
-        let hop1 = encode_uniswap_v2_swap(
-            amount_in,
-            min_out,
-            vec![tri.tokens[0], tri.tokens[1]],
-            recipient,
-        )?;
+        let hop1 = encode_uniswap_v2_swap(amount_in, min_out, vec![tri.tokens[0], tri.tokens[1]], recipient)?;
         targets.push(tri.pools[0]);
         data.push(hop1);
 
         // B -> C
-        let hop2 = encode_uniswap_v2_swap(
-            min_out,
-            min_out,
-            vec![tri.tokens[1], tri.tokens[2]],
-            recipient,
-        )?;
+        let hop2 = encode_uniswap_v2_swap(min_out, min_out, vec![tri.tokens[1], tri.tokens[2]], recipient)?;
         targets.push(tri.pools[1]);
         data.push(hop2);
 
         // C -> A
-        let hop3 = encode_uniswap_v2_swap(
-            min_out,
-            min_out,
-            vec![tri.tokens[2], tri.tokens[0]],
-            recipient,
-        )?;
+        let hop3 = encode_uniswap_v2_swap(min_out, min_out, vec![tri.tokens[2], tri.tokens[0]], recipient)?;
         targets.push(tri.pools[2]);
         data.push(hop3);
 
